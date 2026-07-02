@@ -82,6 +82,24 @@ Docker / GitHub Actions / AI Rules / Workflow / Prompt / foundruu.json
 `foundruu doctor --deep` は DevDoctor 由来の品質診断で、docs/（および最新の `.ai/sessions/`）の
 要件・設計・テスト・AI指示ドキュメントをスコア化し、不足観点と改善案を提示します。
 
+## GitHub Actions として使う
+
+他リポジトリの PR チェックとして doctor を実行できます:
+
+```yaml
+jobs:
+  doctor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: Ruu5LP/RuunFoundry@main
+        with:
+          fail-on: error   # error / warning / never
+          deep: 'true'     # --deep のスコア診断も実行
+```
+
+結果はジョブサマリに表形式で出力されます。
+
 ## 開発
 
 ```bash

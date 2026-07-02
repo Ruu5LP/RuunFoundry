@@ -35,7 +35,8 @@
 
 ## v1.0 — プラットフォーム化
 - [ ] npm publish（`npx foundruu`）
-- [ ] GitHub Actions（doctor を PR チェックとして提供する action）
+- [x] GitHub Actions（composite action `Ruu5LP/RuunFoundry@main`、fail-on / deep 対応）
+- [x] リポジトリ CI（typecheck / test / build / CLI スモークテスト / self-doctor）
 - [ ] Plugin システム（`foundruu-plugin-*` の自動ロード）
 - [ ] MCP Server / VSCode Extension（core ロジックの共有）
 - [ ] Cloud 連携 / Marketplace

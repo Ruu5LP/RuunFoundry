@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+
+      # ビルド成果物のスモークテスト: 実際に init → doctor → session を流す
+      - name: Smoke test CLI
+        run: |
+          npm link
+          foundruu --version
+          mkdir -p /tmp/smoke && cd /tmp/smoke
+          git init -q -b main
+          foundruu init --template typescript --name smoke-app --yes
+          foundruu session start smoke-session
+          foundruu doctor --json > doctor.json
+          node -e "const r=require('/tmp/smoke/doctor.json'); if(!r.ok){console.error(JSON.stringify(r.results.filter(x=>x.status==='fail'),null,2)); process.exit(1)}"
+
+  self-doctor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # 自分自身の Action を dogfooding する
+      - uses: ./
+        with:
+          fail-on: never

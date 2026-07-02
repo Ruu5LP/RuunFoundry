@@ -1,0 +1,87 @@
+name: FoundRuu Doctor
+description: リポジトリがAI開発可能な状態か診断し、結果をジョブサマリへ出力します
+author: Ruu5LP
+
+inputs:
+  path:
+    description: 診断対象ディレクトリ(リポジトリルートからの相対パス)
+    required: false
+    default: '.'
+  fail-on:
+    description: 'ジョブを失敗させる条件: error(fail項目あり) / warning(warn項目でも) / never'
+    required: false
+    default: 'error'
+  deep:
+    description: doctor --deep(プロセス品質スコア診断)も実行する場合は true
+    required: false
+    default: 'false'
+  since:
+    description: --deep の差分比較基準
+    required: false
+    default: 'main'
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Install FoundRuu CLI
+      shell: bash
+      run: |
+        cd "${{ github.action_path }}"
+        npm ci --omit=dev --ignore-scripts
+        npm install --no-save typescript @types/node
+        npx tsc -p tsconfig.json
+
+    - name: Run foundruu doctor
+      shell: bash
+      working-directory: ${{ inputs.path }}
+      run: |
+        DOCTOR="node ${{ github.action_path }}/dist/cli.js"
+        set +e
+        $DOCTOR doctor --json > /tmp/foundruu-doctor.json
+        set -e
+
+        node <<'EOF'
+        const fs = require("fs");
+        const report = JSON.parse(fs.readFileSync("/tmp/foundruu-doctor.json", "utf8"));
+        const icon = { pass: "✅", warn: "⚠️", fail: "❌" };
+        const lines = [
+          "## FoundRuu Doctor",
+          "",
+          "| 項目 | カテゴリ | 結果 |",
+          "|---|---|---|",
+          ...report.results.map((r) => `| ${r.label} | ${r.category} | ${icon[r.status]} ${r.hint ?? ""} |`),
+          "",
+          `**${report.passed} pass / ${report.warned} warn / ${report.failed} fail**`,
+        ];
+        fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, lines.join("\n") + "\n");
+
+        const failOn = process.env.FAIL_ON;
+        const shouldFail =
+          (failOn === "error" && report.failed > 0) ||
+          (failOn === "warning" && report.failed + report.warned > 0);
+        if (shouldFail) {
+          console.error(`foundruu doctor: ${report.failed} fail / ${report.warned} warn (fail-on: ${failOn})`);
+          process.exit(1);
+        }
+        EOF
+      env:
+        FAIL_ON: ${{ inputs.fail-on }}
+
+    - name: Run foundruu doctor --deep
+      if: inputs.deep == 'true'
+      shell: bash
+      working-directory: ${{ inputs.path }}
+      run: |
+        git fetch origin "${{ inputs.since }}" --depth=50 || true
+        echo '### FoundRuu Doctor --deep' >> "$GITHUB_STEP_SUMMARY"
+        echo '```' >> "$GITHUB_STEP_SUMMARY"
+        node "${{ github.action_path }}/dist/cli.js" doctor --deep --since "${{ inputs.since }}" >> "$GITHUB_STEP_SUMMARY"
+        echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+branding:
+  icon: activity
+  color: purple
