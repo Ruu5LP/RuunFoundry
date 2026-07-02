@@ -10,9 +10,13 @@
 - [x] vitest によるテスト
 
 ## v0.2 — テンプレート拡充
-- [ ] laravel-react / laravel-vue / node-react / nextjs / nuxt テンプレート
+- [x] laravel-react テンプレート（composer.json / Vite + laravel-vite-plugin / PHP CI / SETUP ガイド）
+- [x] node-react テンプレート（Vite + React + TypeScript）
+- [x] テキストファイルへの `.patch` 追記対応（.env.example 等）
+- [ ] laravel-vue / nextjs / nuxt テンプレート
 - [ ] `foundruu init` の対話モード（@inquirer/prompts、dev-init から移植）
 - [ ] feature の選択的導入（`--features docker,vitest`）
+- [ ] docker-compose.yml の言語別分岐（現状 Node 前提）
 
 ## v0.3 — Update 強化
 - [ ] GitHub（degit）からの最新アセット取得

@@ -79,12 +79,24 @@ export function copyTree(
         const destPath = path.join(dest, entry.name.replace(/\.patch$/, ""));
         // patch 内にも {{projectName}} 等のテンプレート変数を書けるようレンダリングしてから解釈する
         const rendered = hbs.compile(fs.readFileSync(srcPath, "utf8"))(ctx);
-        const patch = JSON.parse(rendered) as Record<string, unknown>;
-        const base = fs.existsSync(destPath)
-          ? (JSON.parse(fs.readFileSync(destPath, "utf8")) as Record<string, unknown>)
-          : {};
         fs.mkdirSync(dest, { recursive: true });
-        fs.writeFileSync(destPath, JSON.stringify(deepMerge(base, patch), null, 2) + "\n");
+        if (destPath.endsWith(".json")) {
+          // JSON はディープマージ
+          const patch = JSON.parse(rendered) as Record<string, unknown>;
+          const base = fs.existsSync(destPath)
+            ? (JSON.parse(fs.readFileSync(destPath, "utf8")) as Record<string, unknown>)
+            : {};
+          fs.writeFileSync(destPath, JSON.stringify(deepMerge(base, patch), null, 2) + "\n");
+        } else {
+          // テキスト(.env.example 等)は末尾へ追記（既に含まれていればスキップ）
+          const base = fs.existsSync(destPath) ? fs.readFileSync(destPath, "utf8") : "";
+          if (base.includes(rendered.trim())) {
+            result.skipped.push(destPath);
+            continue;
+          }
+          const sep = base.length && !base.endsWith("\n") ? "\n" : "";
+          fs.writeFileSync(destPath, base + sep + rendered.trimEnd() + "\n");
+        }
         result.written.push(destPath);
         continue;
       }

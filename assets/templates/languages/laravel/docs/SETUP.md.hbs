@@ -1,0 +1,24 @@
+# {{projectName}} セットアップ
+
+このプロジェクトは FoundRuu の Laravel テンプレートで初期化されています。
+Laravel 本体のスケルトンはまだ含まれていないため、初回のみ以下を実行してください。
+
+```bash
+# Laravel スケルトンを現在のディレクトリへ展開（既存ファイルは保持される）
+composer create-project laravel/laravel /tmp/laravel-skeleton
+rsync -a --ignore-existing /tmp/laravel-skeleton/ ./
+rm -rf /tmp/laravel-skeleton
+
+composer install
+cp .env.example .env
+php artisan key:generate
+```
+
+## 開発
+
+```bash
+php artisan serve       # バックエンド
+npm run dev             # フロントエンド (Vite)
+php artisan test        # テスト
+./vendor/bin/pint       # フォーマッタ
+```

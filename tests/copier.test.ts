@@ -52,6 +52,17 @@ describe("copyTree", () => {
     expect(merged.scripts).toEqual({ build: "tsc", test: "vitest" });
   });
 
+  it("テキストの .patch は末尾へ追記し、重複追記しない", () => {
+    fs.writeFileSync(path.join(dest, ".env.example"), "PORT=3000\n");
+    fs.writeFileSync(path.join(src, ".env.example.patch"), "APP_NAME={{projectName}}\n");
+    copyTree(src, dest, ctx);
+    expect(fs.readFileSync(path.join(dest, ".env.example"), "utf8")).toBe("PORT=3000\nAPP_NAME=my-app\n");
+
+    const again = copyTree(src, dest, ctx);
+    expect(again.skipped).toHaveLength(1);
+    expect(fs.readFileSync(path.join(dest, ".env.example"), "utf8")).toBe("PORT=3000\nAPP_NAME=my-app\n");
+  });
+
   it("既存ファイルはデフォルトでスキップし、overwrite で上書きする", () => {
     fs.writeFileSync(path.join(src, "x.txt"), "new");
     fs.writeFileSync(path.join(dest, "x.txt"), "old");
