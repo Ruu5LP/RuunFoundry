@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { checks as defaultChecks } from "./checks";
+import { applyRc, readRc } from "./rc";
 import { CheckResult, DoctorCheck, DoctorContext, DoctorReport } from "./types";
 
 export function createContext(cwd: string): DoctorContext {
@@ -14,7 +15,8 @@ export function createContext(cwd: string): DoctorContext {
 
 export function runDoctor(cwd: string, checkList: DoctorCheck[] = defaultChecks): DoctorReport {
   const ctx = createContext(cwd);
-  const results: CheckResult[] = checkList.map((c) => {
+  const effective = applyRc(checkList, readRc(cwd));
+  const results: CheckResult[] = effective.map((c) => {
     const ok = c.check(ctx);
     const status = ok ? "pass" : c.severity === "error" ? "fail" : "warn";
     return {

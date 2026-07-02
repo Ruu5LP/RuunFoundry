@@ -50,10 +50,12 @@ workflow
 
 program
   .command("doctor")
-  .description("リポジトリがAI開発可能な状態か診断する")
+  .description("リポジトリがAI開発可能な状態か診断する（.foundruurc でカスタマイズ可能）")
   .option("--json", "JSON形式で出力する")
-  .action((opts: { json?: boolean }) => {
-    wrap(() => runDoctorCommand(process.cwd(), opts));
+  .option("--deep", "docs/ と git 差分から AI開発プロセスの品質をスコア診断する")
+  .option("--since <ref>", "--deep の差分比較基準", "main")
+  .action(async (opts: { json?: boolean; deep?: boolean; since?: string }) => {
+    await wrap(() => runDoctorCommand(process.cwd(), opts));
   });
 
 program

@@ -1,0 +1,33 @@
+import fs from "fs";
+import path from "path";
+import { DoctorCheck, Severity } from "./types";
+
+export const RC_FILE = ".foundruurc";
+
+export interface FoundruuRc {
+  doctor?: {
+    /** 無効化するチェックID */
+    disable?: string[];
+    /** チェックIDごとの severity 上書き */
+    severity?: Record<string, Severity>;
+  };
+}
+
+export function readRc(cwd: string): FoundruuRc {
+  const file = path.join(cwd, RC_FILE);
+  if (!fs.existsSync(file)) return {};
+  try {
+    return JSON.parse(fs.readFileSync(file, "utf8")) as FoundruuRc;
+  } catch (err) {
+    throw new Error(`${RC_FILE} の JSON が不正です: ${(err as Error).message}`);
+  }
+}
+
+/** .foundruurc の設定をチェックルールへ適用する */
+export function applyRc(checks: DoctorCheck[], rc: FoundruuRc): DoctorCheck[] {
+  const disabled = new Set(rc.doctor?.disable ?? []);
+  const severity = rc.doctor?.severity ?? {};
+  return checks
+    .filter((c) => !disabled.has(c.id))
+    .map((c) => (severity[c.id] ? { ...c, severity: severity[c.id] } : c));
+}

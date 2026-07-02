@@ -1,8 +1,45 @@
 import pc from "picocolors";
 import { runDoctor } from "../doctor/runner";
+import { runDeepDoctor } from "../doctor/deep";
 import { log } from "../core/logger";
 
-export function runDoctorCommand(cwd: string, options: { json?: boolean }): void {
+export interface DoctorOptions {
+  json?: boolean;
+  deep?: boolean;
+  since?: string;
+}
+
+function scoreColor(score: number): (s: string) => string {
+  return score >= 80 ? pc.green : score >= 50 ? pc.yellow : pc.red;
+}
+
+function runDeep(cwd: string, options: DoctorOptions): void {
+  const report = runDeepDoctor(cwd, options.since ?? "main");
+  if (options.json) {
+    console.log(JSON.stringify(report, null, 2));
+    return;
+  }
+  log.info(pc.bold("FoundRuu Doctor --deep — AI開発プロセス品質診断\n"));
+  log.info(
+    `差分(${report.since} 基準): ${report.diff.files}ファイル +${report.diff.insertions} -${report.diff.deletions}\n`
+  );
+  for (const s of report.scores) {
+    const color = scoreColor(s.score);
+    const bar = "█".repeat(Math.round(s.score / 10)).padEnd(10, "░");
+    log.info(`${color(bar)} ${String(s.score).padStart(3)}点 ${s.label}${s.docPath ? pc.dim(`(${s.docPath})`) : ""}`);
+    for (const f of s.failed) {
+      log.info(pc.dim(`    - ${f.label} → ${f.improvement}`));
+    }
+  }
+  log.info("");
+  log.info(`総合スコア: ${scoreColor(report.overall)(pc.bold(`${report.overall}点`))}`);
+}
+
+export function runDoctorCommand(cwd: string, options: DoctorOptions): void {
+  if (options.deep) {
+    runDeep(cwd, options);
+    return;
+  }
   const report = runDoctor(cwd);
 
   if (options.json) {

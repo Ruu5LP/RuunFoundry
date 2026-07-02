@@ -21,6 +21,7 @@ npm link   # foundruu コマンドとして使えるようにする
 | `foundruu init [--template <id>] [--name <name>]` | テンプレート + Workflow + Rules + Doctor設定を一括導入 |
 | `foundruu workflow install` | Workflow / Prompt / Rules（`.ai/`）のみを既存リポジトリへ導入 |
 | `foundruu doctor [--json]` | リポジトリがAI開発可能な状態か診断（fail ありで exit 1） |
+| `foundruu doctor --deep [--since <ref>]` | docs/ と git 差分から AI開発プロセス品質をスコア診断 |
 | `foundruu update [--force]` | Workflow / Prompt / Rules を最新へ更新 |
 | `foundruu templates` | 利用可能なテンプレート一覧 |
 | `foundruu --help` / `--version` | ヘルプ / バージョン |
@@ -64,6 +65,20 @@ Docker / GitHub Actions / AI Rules / Workflow / Prompt / foundruu.json
 
 チェックは [src/doctor/checks.ts](src/doctor/checks.ts) に宣言的に定義されており、1エントリ追加するだけで拡張できます。
 `--json` 出力と exit code により GitHub Actions からも利用できます。
+
+プロジェクトルートの `.foundruurc` でカスタマイズできます:
+
+```json
+{
+  "doctor": {
+    "disable": ["docker"],
+    "severity": { "license": "error" }
+  }
+}
+```
+
+`foundruu doctor --deep` は DevDoctor 由来の品質診断で、docs/（および最新の `.ai/sessions/`）の
+要件・設計・テスト・AI指示ドキュメントをスコア化し、不足観点と改善案を提示します。
 
 ## 開発
 

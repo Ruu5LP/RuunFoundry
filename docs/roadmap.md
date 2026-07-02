@@ -25,9 +25,10 @@
 - [x] ユーザー編集済みファイルの保護（導入時 sha256 を foundruu.json に記録して比較）
 
 ## v0.4 — Doctor 強化
-- [ ] DevDoctor の diff ベース品質診断を統合（`foundruu doctor --deep`）
-- [ ] スコアリング + HTML/MD レポート
-- [ ] `.foundruurc` によるチェックのカスタマイズ（無効化・severity 変更）
+- [x] DevDoctor の diff ベース品質診断を統合（`foundruu doctor --deep --since <ref>`）
+- [x] カテゴリ別スコアリング（要件/設計/テスト/AI指示、改善案つき）
+- [ ] HTML/MD レポート出力
+- [x] `.foundruurc` によるチェックのカスタマイズ（無効化・severity 変更）
 
 ## v0.5 — セッション管理
 - [ ] `foundruu session start/list`（dev-workflow の ai-session を TS 移植）
