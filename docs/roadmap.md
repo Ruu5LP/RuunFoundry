@@ -14,7 +14,7 @@
 - [x] node-react テンプレート（Vite + React + TypeScript）
 - [x] テキストファイルへの `.patch` 追記対応（.env.example 等）
 - [ ] laravel-vue / nextjs / nuxt テンプレート
-- [ ] `foundruu init` の対話モード（@inquirer/prompts、dev-init から移植）
+- [x] `foundruu init` の対話モード（@inquirer/prompts、テンプレート・名前・説明を対話選択）
 - [ ] feature の選択的導入（`--features docker,vitest`）
 - [ ] docker-compose.yml の言語別分岐（現状 Node 前提）
 

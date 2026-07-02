@@ -15,10 +15,15 @@ program
   .description("FoundRuu CLI — AI開発を標準化するためのプラットフォーム")
   .version(cliVersion());
 
-const wrap = (fn: () => void): void => {
+const wrap = async (fn: () => void | Promise<void>): Promise<void> => {
   try {
-    fn();
+    await fn();
   } catch (err) {
+    // Ctrl+C でプロンプトを中断した場合は静かに終了する
+    if ((err as Error).name === "ExitPromptError") {
+      process.exitCode = 130;
+      return;
+    }
     log.error((err as Error).message);
     process.exitCode = 1;
   }
@@ -27,11 +32,12 @@ const wrap = (fn: () => void): void => {
 program
   .command("init")
   .description("AI開発環境（テンプレート / Workflow / Rules / Doctor設定）を一括導入する")
-  .option("-t, --template <id>", "使用するテンプレートID", "typescript")
+  .option("-t, --template <id>", "使用するテンプレートID（未指定なら対話で選択）")
   .option("-n, --name <name>", "プロジェクト名（デフォルト: ディレクトリ名）")
   .option("-d, --description <text>", "プロジェクトの説明")
-  .action((opts: { template: string; name?: string; description?: string }) => {
-    wrap(() => runInit(process.cwd(), opts));
+  .option("-y, --yes", "対話プロンプトを出さずデフォルト値で実行する")
+  .action(async (opts: { template?: string; name?: string; description?: string; yes?: boolean }) => {
+    await wrap(() => runInit(process.cwd(), opts));
   });
 
 const workflow = program.command("workflow").description("Workflow / Prompt / Rules を管理する");

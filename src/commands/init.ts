@@ -11,9 +11,37 @@ export interface InitOptions {
   template?: string;
   name?: string;
   description?: string;
+  /** 対話プロンプトを出さずデフォルト値で進める */
+  yes?: boolean;
 }
 
-export function runInit(cwd: string, options: InitOptions): void {
+/** --template 未指定かつ TTY のとき、対話で不足オプションを埋める */
+async function promptMissing(cwd: string, options: InitOptions): Promise<InitOptions> {
+  const interactive = process.stdin.isTTY && !options.yes && !options.template;
+  if (!interactive) return options;
+
+  // @inquirer/prompts は ESM 専用。CommonJS ビルドで tsc が import() を require() へ
+  // 変換しないよう、動的 import を明示的に保持する
+  const importEsm = new Function("specifier", "return import(specifier)") as (
+    specifier: string
+  ) => Promise<typeof import("@inquirer/prompts")>;
+  const { select, input } = await importEsm("@inquirer/prompts");
+  const template = await select({
+    message: "テンプレートを選択してください",
+    choices: templates.map((t) => ({
+      name: `${t.label}${t.status === "planned" ? "（準備中）" : ""}`,
+      value: t.id,
+      disabled: t.status === "planned" ? "（準備中）" : false,
+    })),
+    default: DEFAULT_TEMPLATE,
+  });
+  const name = options.name ?? (await input({ message: "プロジェクト名", default: path.basename(cwd) }));
+  const description = options.description ?? (await input({ message: "プロジェクトの説明（任意）" }));
+  return { ...options, template, name, description };
+}
+
+export async function runInit(cwd: string, rawOptions: InitOptions): Promise<void> {
+  const options = await promptMissing(cwd, rawOptions);
   const templateId = options.template ?? DEFAULT_TEMPLATE;
   const template = findTemplate(templateId);
 
