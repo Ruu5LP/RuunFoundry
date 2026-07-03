@@ -1,6 +1,6 @@
 {
   "name": "foundruu",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "FoundRuu CLI - AI開発を標準化するためのプラットフォームCLI",
   "license": "MIT",
   "type": "commonjs",
@@ -13,28 +13,28 @@
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "dev": "ts-node src/cli.ts",
+    "dev": "tsx src/cli.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "prepublishOnly": "npm run typecheck && npm run build"
   },
   "dependencies": {
-    "@inquirer/prompts": "^7.10.1",
+    "@inquirer/prompts": "^8.5.2",
     "@modelcontextprotocol/sdk": "^1.29.0",
-    "commander": "^12.1.0",
+    "commander": "^15.0.0",
     "handlebars": "^4.7.8",
     "picocolors": "^1.1.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@types/node": "^20.14.0",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.5.4",
-    "vitest": "^2.1.4"
+    "@types/node": "^26.1.0",
+    "tsx": "^4.22.5",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.9"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   },
   "keywords": [
     "cli",

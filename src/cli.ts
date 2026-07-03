@@ -75,7 +75,7 @@ program
   .command("mcp")
   .description("MCP サーバーを起動する(AIエージェントから doctor / session 等をツールとして利用)")
   .action(async () => {
-    const { runMcpServer } = await import("./commands/mcp");
+    const { runMcpServer } = await import("./commands/mcp.js");
     await wrap(() => runMcpServer(process.cwd()));
   });
 
