@@ -31,6 +31,7 @@ npm install && npm run build && npm link
 | `foundruu templates` | 利用可能なテンプレート一覧 |
 | `foundruu plugins` | 読み込まれているプラグイン一覧 |
 | `foundruu mcp` | MCP サーバーを起動（AIエージェント連携） |
+| `foundruu dashboard [--dir reports]` | deep レポート履歴からスコア推移ダッシュボードを生成 |
 | `foundruu --help` / `--version` | ヘルプ / バージョン |
 
 ## 利用フロー
@@ -115,6 +116,18 @@ module.exports = {
     program.command("audit").action(() => log.success("audit 実行"));
   },
 };
+```
+
+### 公式プラグイン
+
+- [foundruu-plugin-security](plugins/foundruu-plugin-security/) — SECURITY.md / .env の gitignore / 依存更新自動化のチェックを追加（`npm i -D foundruu-plugin-security`）。自作プラグインの参考実装でもあります
+
+## ダッシュボード
+
+`doctor --deep --report reports` で溜めたレポートから、スコア推移を可視化できます:
+
+```bash
+foundruu dashboard          # reports/index.html を生成
 ```
 
 ## GitHub Actions として使う

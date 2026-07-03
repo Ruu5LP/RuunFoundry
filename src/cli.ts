@@ -97,6 +97,16 @@ session
   });
 
 program
+  .command("dashboard")
+  .description("doctor --deep のレポート履歴からスコア推移ダッシュボード(HTML)を生成する")
+  .option("--dir <dir>", "レポートのディレクトリ", "reports")
+  .option("--out <file>", "出力先HTML(デフォルト: <dir>/index.html)")
+  .action(async (opts: { dir?: string; out?: string }) => {
+    const { runDashboard } = await import("./commands/dashboard.js");
+    await wrap(() => runDashboard(process.cwd(), opts));
+  });
+
+program
   .command("templates")
   .description("利用可能なテンプレートを一覧表示する")
   .action(() => {

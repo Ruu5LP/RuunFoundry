@@ -40,4 +40,7 @@
 - [x] Plugin システム（`foundruu-plugin-*` / foundruu.json plugins の自動ロード、コマンド・doctor チェック拡張）
 - [x] MCP Server（`foundruu mcp`、stdio で 6 ツール公開）
 - [x] VSCode Extension（vscode-extension/、コマンドパレットから CLI 実行）
-- [ ] Cloud 連携 / Marketplace
+- [x] Marketplace の入口（公式プラグイン foundruu-plugin-security を npm 公開）
+- [x] スコア推移ダッシュボード（`foundruu dashboard`）
+- [x] 旧3リポジトリのアーカイブと誘導 / GitHub Release 自動化 / テンプレート実ビルド週次検証
+- [ ] Cloud 連携（レポート収集サービス）
