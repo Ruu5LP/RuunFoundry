@@ -73,6 +73,21 @@ export const templates: TemplateDefinition[] = [
 
 export const DEFAULT_TEMPLATE = "typescript";
 
+/** --features で選択可能な feature 一覧(assets/templates/features/ と対応) */
+export const availableFeatures = [
+  "docker",
+  "github-actions",
+  "eslint",
+  "prettier",
+  "vitest",
+  "react",
+  "react-laravel",
+  "vue-laravel",
+  "discord",
+  "line-bot",
+  "lark",
+] as const;
+
 export function findTemplate(id: string): TemplateDefinition | undefined {
   return templates.find((t) => t.id === id);
 }

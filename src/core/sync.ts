@@ -39,17 +39,31 @@ export function listFiles(dir: string, base = dir): string[] {
  * - 導入先 != recorded(ユーザーが編集済み) → user-modified(force 時のみ上書き)
  * - recorded が無い(旧バージョン導入等)   → user-modified 扱いで保護
  */
+/** relPath が only 指定(完全一致 or ディレクトリ前置一致)に含まれるか */
+export function matchesOnly(relPath: string, only: string[]): boolean {
+  const normalized = relPath.split(path.sep).join("/");
+  return only.some((o) => {
+    const pattern = o.replace(/\/+$/, "");
+    return normalized === pattern || normalized.startsWith(pattern + "/");
+  });
+}
+
 export function syncTree(
   srcDir: string,
   destDir: string,
   recorded: FileHashes,
-  options: { force?: boolean; dryRun?: boolean } = {}
+  options: { force?: boolean; dryRun?: boolean; only?: string[] } = {}
 ): SyncResult {
-  const { force = false, dryRun = false } = options;
+  const { force = false, dryRun = false, only } = options;
   const plan: SyncPlanEntry[] = [];
   const hashes: FileHashes = {};
 
   for (const relPath of listFiles(srcDir).sort()) {
+    // --only 指定がある場合、対象外ファイルは記録ハッシュを維持したままスキップ
+    if (only && only.length > 0 && !matchesOnly(relPath, only)) {
+      if (recorded[relPath]) hashes[relPath] = recorded[relPath];
+      continue;
+    }
     const srcPath = path.join(srcDir, relPath);
     const destPath = path.join(destDir, relPath);
     const srcHash = hashFile(srcPath);

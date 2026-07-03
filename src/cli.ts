@@ -38,8 +38,9 @@ program
   .option("-t, --template <id>", "使用するテンプレートID（未指定なら対話で選択）")
   .option("-n, --name <name>", "プロジェクト名（デフォルト: ディレクトリ名）")
   .option("-d, --description <text>", "プロジェクトの説明")
+  .option("-f, --features <list>", "導入する feature をカンマ区切りで指定(例: docker,vitest)")
   .option("-y, --yes", "対話プロンプトを出さずデフォルト値で実行する")
-  .action(async (opts: { template?: string; name?: string; description?: string; yes?: boolean }) => {
+  .action(async (opts: { template?: string; name?: string; description?: string; features?: string; yes?: boolean }) => {
     await wrap(() => runInit(process.cwd(), opts));
   });
 
@@ -57,7 +58,8 @@ program
   .option("--json", "JSON形式で出力する")
   .option("--deep", "docs/ と git 差分から AI開発プロセスの品質をスコア診断する")
   .option("--since <ref>", "--deep の差分比較基準", "main")
-  .action(async (opts: { json?: boolean; deep?: boolean; since?: string }) => {
+  .option("--report <dir>", "--deep のレポート(md/html/json)を書き出すディレクトリ")
+  .action(async (opts: { json?: boolean; deep?: boolean; since?: string; report?: string }) => {
     await wrap(() => runDoctorCommand(process.cwd(), opts));
   });
 
@@ -67,7 +69,8 @@ program
   .option("-f, --force", "ユーザー編集済みファイルも上書きする")
   .option("--diff", "差分の表示のみで書き込まない")
   .option("--local", "GitHub から取得せず CLI 同梱アセットを使う")
-  .action(async (opts: { force?: boolean; diff?: boolean; local?: boolean }) => {
+  .option("--only <paths...>", "指定パスのみ更新する(例: --only .ai/workflows .ai/prompts/session-workflow.md)")
+  .action(async (opts: { force?: boolean; diff?: boolean; local?: boolean; only?: string[] }) => {
     await wrap(() => runUpdate(process.cwd(), opts));
   });
 

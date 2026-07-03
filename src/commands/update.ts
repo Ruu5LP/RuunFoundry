@@ -11,6 +11,8 @@ export interface UpdateOptions {
   diff?: boolean;
   /** GitHub から取得せず CLI 同梱アセットを使う */
   local?: boolean;
+  /** 指定パス(ファイル or ディレクトリ)のみ更新する */
+  only?: string[];
 }
 
 const STATUS_LABEL: Record<SyncPlanEntry["status"], string> = {
@@ -41,6 +43,7 @@ export function runUpdate(cwd: string, options: UpdateOptions): void {
   const { plan, hashes } = syncTree(root, cwd, recorded, {
     force: options.force,
     dryRun: options.diff,
+    only: options.only,
   });
 
   const changed = plan.filter((e) => e.status !== "unchanged");

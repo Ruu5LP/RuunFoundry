@@ -4,15 +4,30 @@ import { templatesRoot } from "../core/assets";
 import { cliVersion, writeConfig, readConfig } from "../core/config";
 import { copyTree, TemplateContext } from "../core/copier";
 import { log } from "../core/logger";
-import { DEFAULT_TEMPLATE, findTemplate, templates } from "../registry/templates";
+import { availableFeatures, DEFAULT_TEMPLATE, findTemplate, templates } from "../registry/templates";
 import { installWorkflow } from "./workflow";
 
 export interface InitOptions {
   template?: string;
   name?: string;
   description?: string;
+  /** カンマ区切りの feature 指定(テンプレートのデフォルトを上書き) */
+  features?: string;
   /** 対話プロンプトを出さずデフォルト値で進める */
   yes?: boolean;
+}
+
+/** --features のパースと検証。テンプレートデフォルトを上書きする */
+export function resolveFeatures(spec: string | undefined, defaults: string[]): string[] {
+  if (spec === undefined) return defaults;
+  const requested = spec.split(",").map((f) => f.trim()).filter(Boolean);
+  const unknown = requested.filter((f) => !(availableFeatures as readonly string[]).includes(f));
+  if (unknown.length > 0) {
+    throw new Error(
+      `不明な feature です: ${unknown.join(", ")}(利用可能: ${availableFeatures.join(", ")})`
+    );
+  }
+  return requested;
 }
 
 /** --template 未指定かつ TTY のとき、対話で不足オプションを埋める */
@@ -37,7 +52,22 @@ async function promptMissing(cwd: string, options: InitOptions): Promise<InitOpt
   });
   const name = options.name ?? (await input({ message: "プロジェクト名", default: path.basename(cwd) }));
   const description = options.description ?? (await input({ message: "プロジェクトの説明（任意）" }));
-  return { ...options, template, name, description };
+
+  // feature をチェックボックスで選択(テンプレートのデフォルトが初期チェック)
+  let features = options.features;
+  if (features === undefined) {
+    const { checkbox } = await importEsm("@inquirer/prompts");
+    const defaults = findTemplate(template)?.features ?? [];
+    const selected = await checkbox({
+      message: "導入する feature を選択してください",
+      choices: (availableFeatures as readonly string[]).map((f) => ({
+        value: f,
+        checked: defaults.includes(f),
+      })),
+    });
+    features = selected.join(",");
+  }
+  return { ...options, template, name, description, features };
 }
 
 export async function runInit(cwd: string, rawOptions: InitOptions): Promise<void> {
@@ -56,6 +86,7 @@ export async function runInit(cwd: string, rawOptions: InitOptions): Promise<voi
     );
   }
 
+  const features = resolveFeatures(options.features, template.features);
   const ctx: TemplateContext = {
     projectName: options.name ?? path.basename(cwd),
     description: options.description ?? "",
@@ -63,8 +94,8 @@ export async function runInit(cwd: string, rawOptions: InitOptions): Promise<voi
     languageLabel: template.languageLabel,
     aiProviders: template.aiProviders,
     aiProviderLabels: template.aiProviders,
-    features: template.features,
-    featureLabels: template.features,
+    features,
+    featureLabels: features,
     year: new Date().getFullYear(),
   };
 
@@ -75,7 +106,7 @@ export async function runInit(cwd: string, rawOptions: InitOptions): Promise<voi
   const layers: string[] = [
     path.join(root, "base"),
     path.join(root, "languages", template.language),
-    ...template.features.map((f) => path.join(root, "features", f)),
+    ...features.map((f) => path.join(root, "features", f)),
     path.join(root, "ai", "_common"),
     ...template.aiProviders.map((p) => path.join(root, "ai", p)),
   ];

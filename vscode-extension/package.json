@@ -1,0 +1,27 @@
+{
+  "name": "foundruu-vscode",
+  "displayName": "FoundRuu",
+  "description": "FoundRuu - AI開発標準化プラットフォームの VSCode 連携",
+  "version": "0.1.0",
+  "publisher": "ruu5lp",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": ["Other"],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      { "command": "foundruu.doctor", "title": "FoundRuu: Doctor（健全性診断）" },
+      { "command": "foundruu.doctorDeep", "title": "FoundRuu: Doctor Deep（品質スコア診断）" },
+      { "command": "foundruu.sessionStart", "title": "FoundRuu: セッションを作成" },
+      { "command": "foundruu.workflowInstall", "title": "FoundRuu: Workflow を導入" },
+      { "command": "foundruu.update", "title": "FoundRuu: Workflow を更新" }
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Ruu5LP/RuunFoundry.git",
+    "directory": "vscode-extension"
+  }
+}

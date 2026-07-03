@@ -1,12 +1,15 @@
 import pc from "picocolors";
 import { runDoctor } from "../doctor/runner";
 import { runDeepDoctor } from "../doctor/deep";
+import { writeDeepReports } from "../doctor/report";
 import { log } from "../core/logger";
 
 export interface DoctorOptions {
   json?: boolean;
   deep?: boolean;
   since?: string;
+  /** --deep レポート(md/html/json)の出力先ディレクトリ */
+  report?: string;
 }
 
 function scoreColor(score: number): (s: string) => string {
@@ -15,6 +18,10 @@ function scoreColor(score: number): (s: string) => string {
 
 function runDeep(cwd: string, options: DoctorOptions): void {
   const report = runDeepDoctor(cwd, options.since ?? "main");
+  if (options.report) {
+    const files = writeDeepReports(report, options.report);
+    for (const f of files) log.step(`レポート出力: ${f}`);
+  }
   if (options.json) {
     console.log(JSON.stringify(report, null, 2));
     return;

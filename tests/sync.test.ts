@@ -78,3 +78,22 @@ describe("syncTree", () => {
     expect(plan[0].status).toBe("unchanged");
   });
 });
+
+describe("syncTree --only", () => {
+  it("only 指定パス配下のみ書き込む", () => {
+    write(src, ".ai/workflows/feature.md", "v2");
+    write(src, ".ai/prompts/session-workflow.md", "v2");
+    const { plan } = syncTree(src, dest, {}, { only: [".ai/workflows"] });
+    expect(plan.map((e) => e.relPath)).toEqual([".ai/workflows/feature.md"]);
+    expect(fs.existsSync(path.join(dest, ".ai/workflows/feature.md"))).toBe(true);
+    expect(fs.existsSync(path.join(dest, ".ai/prompts/session-workflow.md"))).toBe(false);
+  });
+
+  it("対象外ファイルの記録ハッシュは維持される", () => {
+    write(src, "a.md", "v2");
+    write(src, "b.md", "v2");
+    const recorded: FileHashes = { "b.md": "keep-me" };
+    const { hashes } = syncTree(src, dest, recorded, { only: ["a.md"] });
+    expect(hashes["b.md"]).toBe("keep-me");
+  });
+});
