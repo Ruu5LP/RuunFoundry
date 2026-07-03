@@ -11,12 +11,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
 {{#eq language "typescript"}}
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
 
       - run: npm ci
@@ -32,9 +32,9 @@ jobs:
 {{/eq}}
 
 {{#eq language "python"}}
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
-          python-version: '3.12'
+          python-version: '3.14'
 
       - run: pip install -r requirements.txt
       - run: python -m pytest
@@ -43,7 +43,7 @@ jobs:
 {{#eq language "laravel"}}
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.3'
+          php-version: '8.5'
 
       - run: composer install --no-interaction
       - run: cp .env.example .env && php artisan key:generate
@@ -51,9 +51,9 @@ jobs:
 {{/eq}}
 
 {{#eq language "nextjs"}}
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
 
       - run: npm ci
@@ -67,9 +67,9 @@ jobs:
 {{/eq}}
 
 {{#eq language "nuxt"}}
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
 
       - run: npm ci
