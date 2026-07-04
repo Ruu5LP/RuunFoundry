@@ -4,7 +4,14 @@ import prettier from "eslint-config-prettier";
 
 export default tseslint.config(
   {
-    ignores: ["dist/**", "node_modules/**", "assets/**", "vscode-extension/**", "plugins/**"],
+    ignores: [
+      "dist/**",
+      "action/**",
+      "node_modules/**",
+      "assets/**",
+      "vscode-extension/**",
+      "plugins/**",
+    ],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,
