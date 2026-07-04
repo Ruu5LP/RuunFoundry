@@ -122,6 +122,8 @@ module.exports = {
 };
 ```
 
+書き方・ローカル開発・npm 公開までは [docs/PLUGIN_DEV.md](docs/PLUGIN_DEV.md) を参照してください。
+
 ### 公式プラグイン
 
 - [foundruu-plugin-security](plugins/foundruu-plugin-security/) — SECURITY.md / .env の gitignore / 依存更新自動化のチェックを追加（`npm i -D foundruu-plugin-security`）。自作プラグインの参考実装でもあります
@@ -177,18 +179,22 @@ npm install や TypeScript ビルドは走りません(`node` で即実行)。`@
 ```bash
 npm run dev -- doctor   # ts-node で実行
 npm test                # vitest
+npm run test:coverage   # カバレッジ計測（coverage/ に HTML/lcov 出力）
 npm run typecheck
 npm run lint            # ESLint（--fix で自動修正）
 npm run format          # Prettier で整形（format:check は差分チェックのみ）
 ```
 
-lint / format:check / typecheck / test / build は CI（[.github/workflows/ci.yml](.github/workflows/ci.yml)）でも実行されます。
+lint / format:check / typecheck / test:coverage / build は CI（[.github/workflows/ci.yml](.github/workflows/ci.yml)）でも実行されます。
+カバレッジは回帰防止の下限しきい値を設定しており（[vitest.config.ts](vitest.config.ts)）、下回ると CI が失敗します。
 
 ## ドキュメント
 
 - [docs/investigation.md](docs/investigation.md) — 3リポジトリの調査結果
 - [docs/architecture.md](docs/architecture.md) — 全体アーキテクチャ・設計判断
 - [docs/roadmap.md](docs/roadmap.md) — MVP以降のロードマップ
+- [docs/PLUGIN_DEV.md](docs/PLUGIN_DEV.md) — プラグイン開発ガイド
+- [docs/cloud.md](docs/cloud.md) — Cloud(レポート集約)の設計
 
 ## ライセンス
 
