@@ -20,20 +20,20 @@ npm install && npm run build && npm link
 
 ## コマンド
 
-| コマンド | 説明 |
-|---|---|
-| `foundruu init [--template <id>] [--features <list>]` | テンプレート + Workflow + Rules + Doctor設定を一括導入 |
-| `foundruu workflow install` | Workflow / Prompt / Rules（`.ai/`）のみを既存リポジトリへ導入 |
-| `foundruu doctor [--json]` | リポジトリがAI開発可能な状態か診断（fail ありで exit 1） |
-| `foundruu doctor --deep [--since <ref>] [--report <dir>]` | AI開発プロセス品質をスコア診断（md/html/json レポート出力可） |
-| `foundruu update [--force] [--diff] [--only <paths...>]` | Workflow / Prompt / Rules を最新へ更新（パス指定・差分確認可） |
-| `foundruu session start <name>` / `session list` | AI開発セッションの作成 / 一覧 |
-| `foundruu templates` | 利用可能なテンプレート一覧 |
-| `foundruu plugins` | 読み込まれているプラグイン一覧 |
-| `foundruu mcp` | MCP サーバーを起動（AIエージェント連携） |
-| `foundruu dashboard [--dir reports]` | deep レポート履歴からスコア推移ダッシュボードを生成 |
-| `foundruu cloud push` | 最新の deep レポートを [foundruu-cloud](https://github.com/Ruu5LP/foundruu-cloud) へ送信 |
-| `foundruu --help` / `--version` | ヘルプ / バージョン |
+| コマンド                                                  | 説明                                                                                     |
+| --------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `foundruu init [--template <id>] [--features <list>]`     | テンプレート + Workflow + Rules + Doctor設定を一括導入                                   |
+| `foundruu workflow install`                               | Workflow / Prompt / Rules（`.ai/`）のみを既存リポジトリへ導入                            |
+| `foundruu doctor [--json]`                                | リポジトリがAI開発可能な状態か診断（fail ありで exit 1）                                 |
+| `foundruu doctor --deep [--since <ref>] [--report <dir>]` | AI開発プロセス品質をスコア診断（md/html/json レポート出力可）                            |
+| `foundruu update [--force] [--diff] [--only <paths...>]`  | Workflow / Prompt / Rules を最新へ更新（パス指定・差分確認可）                           |
+| `foundruu session start <name>` / `session list`          | AI開発セッションの作成 / 一覧                                                            |
+| `foundruu templates`                                      | 利用可能なテンプレート一覧                                                               |
+| `foundruu plugins`                                        | 読み込まれているプラグイン一覧                                                           |
+| `foundruu mcp`                                            | MCP サーバーを起動（AIエージェント連携）                                                 |
+| `foundruu dashboard [--dir <dir>] [--out <file>]`         | deep レポート履歴からスコア推移ダッシュボード(HTML)を生成（既定: `reports/index.html`）  |
+| `foundruu cloud push`                                     | 最新の deep レポートを [foundruu-cloud](https://github.com/Ruu5LP/foundruu-cloud) へ送信 |
+| `foundruu --help` / `--version`                           | ヘルプ / バージョン                                                                      |
 
 ## 利用フロー
 
@@ -110,8 +110,11 @@ module.exports = {
   name: "security",
   register({ program, addDoctorCheck, log }) {
     addDoctorCheck({
-      id: "security-md", label: "SECURITY.md", category: "セキュリティ",
-      severity: "warn", hint: "SECURITY.md を追加してください",
+      id: "security-md",
+      label: "SECURITY.md",
+      category: "セキュリティ",
+      severity: "warn",
+      hint: "SECURITY.md を追加してください",
       check: (ctx) => ctx.exists("SECURITY.md"),
     });
     program.command("audit").action(() => log.success("audit 実行"));
@@ -128,7 +131,8 @@ module.exports = {
 `doctor --deep --report reports` で溜めたレポートから、スコア推移を可視化できます:
 
 ```bash
-foundruu dashboard          # reports/index.html を生成
+foundruu dashboard                        # reports/index.html を生成
+foundruu dashboard --dir out --out d.html # 入力ディレクトリ・出力先を指定
 ```
 
 ## Cloud（レポート集約）
@@ -155,8 +159,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: Ruu5LP/foundruu@main
         with:
-          fail-on: error   # error / warning / never
-          deep: 'true'     # --deep のスコア診断も実行
+          fail-on: error # error / warning / never
+          deep: "true" # --deep のスコア診断も実行
 ```
 
 結果はジョブサマリに表形式で出力されます。
@@ -172,7 +176,11 @@ jobs:
 npm run dev -- doctor   # ts-node で実行
 npm test                # vitest
 npm run typecheck
+npm run lint            # ESLint（--fix で自動修正）
+npm run format          # Prettier で整形（format:check は差分チェックのみ）
 ```
+
+lint / format:check / typecheck / test / build は CI（[.github/workflows/ci.yml](.github/workflows/ci.yml)）でも実行されます。
 
 ## ドキュメント
 

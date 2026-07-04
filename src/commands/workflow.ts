@@ -45,7 +45,9 @@ export function installWorkflow(cwd: string, options: { overwrite?: boolean } = 
     log.step(`書き込み: ${path.relative(cwd, file)}`);
   }
   if (result.skipped.length > 0) {
-    log.info(`  既存のためスキップ: ${result.skipped.length}件（上書きは foundruu update --force）`);
+    log.info(
+      `  既存のためスキップ: ${result.skipped.length}件（上書きは foundruu update --force）`
+    );
   }
 
   // 管理ファイルの導入時ハッシュを記録する(update 時のユーザー編集検出に使用)

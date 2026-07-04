@@ -54,9 +54,18 @@ export function renderDashboard(history: HistoryEntry[]): string {
   const color = (s: number) => (s >= 80 ? "#22a06b" : s >= 50 ? "#b38600" : "#c9372c");
   const categoryRows = latest.report.scores
     .map((s) => {
-      const prev = history.length > 1 ? history[history.length - 2].report.scores.find((p) => p.category === s.category) : undefined;
+      const prev =
+        history.length > 1
+          ? history[history.length - 2].report.scores.find((p) => p.category === s.category)
+          : undefined;
       const delta = prev ? s.score - prev.score : 0;
-      const deltaLabel = prev ? (delta > 0 ? ` (▲${delta})` : delta < 0 ? ` (▼${-delta})` : " (±0)") : "";
+      const deltaLabel = prev
+        ? delta > 0
+          ? ` (▲${delta})`
+          : delta < 0
+            ? ` (▼${-delta})`
+            : " (±0)"
+        : "";
       return `<tr><td>${s.label}</td><td style="color:${color(s.score)};font-weight:bold">${s.score}点${deltaLabel}</td><td>${s.docPath ?? "（なし）"}</td></tr>`;
     })
     .join("");

@@ -4,7 +4,12 @@ import { templatesRoot } from "../core/assets";
 import { cliVersion, writeConfig, readConfig } from "../core/config";
 import { copyTree, TemplateContext } from "../core/copier";
 import { log } from "../core/logger";
-import { availableFeatures, DEFAULT_TEMPLATE, findTemplate, templates } from "../registry/templates";
+import {
+  availableFeatures,
+  DEFAULT_TEMPLATE,
+  findTemplate,
+  templates,
+} from "../registry/templates";
 import { installWorkflow } from "./workflow";
 
 export interface InitOptions {
@@ -20,7 +25,10 @@ export interface InitOptions {
 /** --features のパースと検証。テンプレートデフォルトを上書きする */
 export function resolveFeatures(spec: string | undefined, defaults: string[]): string[] {
   if (spec === undefined) return defaults;
-  const requested = spec.split(",").map((f) => f.trim()).filter(Boolean);
+  const requested = spec
+    .split(",")
+    .map((f) => f.trim())
+    .filter(Boolean);
   const unknown = requested.filter((f) => !(availableFeatures as readonly string[]).includes(f));
   if (unknown.length > 0) {
     throw new Error(
@@ -50,8 +58,10 @@ async function promptMissing(cwd: string, options: InitOptions): Promise<InitOpt
     })),
     default: DEFAULT_TEMPLATE,
   });
-  const name = options.name ?? (await input({ message: "プロジェクト名", default: path.basename(cwd) }));
-  const description = options.description ?? (await input({ message: "プロジェクトの説明（任意）" }));
+  const name =
+    options.name ?? (await input({ message: "プロジェクト名", default: path.basename(cwd) }));
+  const description =
+    options.description ?? (await input({ message: "プロジェクトの説明（任意）" }));
 
   // feature をチェックボックスで選択(テンプレートのデフォルトが初期チェック)
   let features = options.features;
@@ -76,13 +86,18 @@ export async function runInit(cwd: string, rawOptions: InitOptions): Promise<voi
   const template = findTemplate(templateId);
 
   if (!template) {
-    const available = templates.map((t) => `${t.id}${t.status === "planned" ? " (準備中)" : ""}`).join(", ");
+    const available = templates
+      .map((t) => `${t.id}${t.status === "planned" ? " (準備中)" : ""}`)
+      .join(", ");
     throw new Error(`テンプレート "${templateId}" は存在しません。利用可能: ${available}`);
   }
   if (template.status === "planned") {
     throw new Error(
       `テンプレート "${templateId}" は準備中です。現在利用可能なテンプレート: ` +
-        templates.filter((t) => t.status === "available").map((t) => t.id).join(", ")
+        templates
+          .filter((t) => t.status === "available")
+          .map((t) => t.id)
+          .join(", ")
     );
   }
 

@@ -38,15 +38,21 @@ describe("copyTree", () => {
   it("hasFeature / hasAi ヘルパーが使える", () => {
     fs.writeFileSync(
       path.join(src, "a.md.hbs"),
-      "{{#if (hasFeature \"vitest\")}}V{{/if}}{{#if (hasAi \"claude\")}}C{{/if}}{{#if (hasAi \"codex\")}}X{{/if}}"
+      '{{#if (hasFeature "vitest")}}V{{/if}}{{#if (hasAi "claude")}}C{{/if}}{{#if (hasAi "codex")}}X{{/if}}'
     );
     copyTree(src, dest, ctx);
     expect(fs.readFileSync(path.join(dest, "a.md"), "utf8")).toBe("VC");
   });
 
   it(".patch を既存 JSON にディープマージする", () => {
-    fs.writeFileSync(path.join(dest, "package.json"), JSON.stringify({ scripts: { build: "tsc" } }));
-    fs.writeFileSync(path.join(src, "package.json.patch"), JSON.stringify({ scripts: { test: "vitest" } }));
+    fs.writeFileSync(
+      path.join(dest, "package.json"),
+      JSON.stringify({ scripts: { build: "tsc" } })
+    );
+    fs.writeFileSync(
+      path.join(src, "package.json.patch"),
+      JSON.stringify({ scripts: { test: "vitest" } })
+    );
     copyTree(src, dest, ctx);
     const merged = JSON.parse(fs.readFileSync(path.join(dest, "package.json"), "utf8"));
     expect(merged.scripts).toEqual({ build: "tsc", test: "vitest" });
@@ -56,11 +62,15 @@ describe("copyTree", () => {
     fs.writeFileSync(path.join(dest, ".env.example"), "PORT=3000\n");
     fs.writeFileSync(path.join(src, ".env.example.patch"), "APP_NAME={{projectName}}\n");
     copyTree(src, dest, ctx);
-    expect(fs.readFileSync(path.join(dest, ".env.example"), "utf8")).toBe("PORT=3000\nAPP_NAME=my-app\n");
+    expect(fs.readFileSync(path.join(dest, ".env.example"), "utf8")).toBe(
+      "PORT=3000\nAPP_NAME=my-app\n"
+    );
 
     const again = copyTree(src, dest, ctx);
     expect(again.skipped).toHaveLength(1);
-    expect(fs.readFileSync(path.join(dest, ".env.example"), "utf8")).toBe("PORT=3000\nAPP_NAME=my-app\n");
+    expect(fs.readFileSync(path.join(dest, ".env.example"), "utf8")).toBe(
+      "PORT=3000\nAPP_NAME=my-app\n"
+    );
   });
 
   it("既存ファイルはデフォルトでスキップし、overwrite で上書きする", () => {

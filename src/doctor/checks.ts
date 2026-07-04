@@ -51,7 +51,13 @@ export const checks: DoctorCheck[] = [
     severity: "warn",
     hint: "Dockerfile または docker-compose.yml を追加すると環境を再現しやすくなります",
     check: (ctx) =>
-      ctx.existsAny(["Dockerfile", "docker-compose.yml", "docker-compose.yaml", "compose.yml", "compose.yaml"]),
+      ctx.existsAny([
+        "Dockerfile",
+        "docker-compose.yml",
+        "docker-compose.yaml",
+        "compose.yml",
+        "compose.yaml",
+      ]),
   },
   {
     id: "github-actions",

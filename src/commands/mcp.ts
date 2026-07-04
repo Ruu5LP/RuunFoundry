@@ -19,8 +19,7 @@ import { runUpdate } from "./update";
  *   claude mcp add foundruu -- npx foundruu mcp
  */
 
-const resolveDir = (base: string, dir?: string): string =>
-  dir ? path.resolve(base, dir) : base;
+const resolveDir = (base: string, dir?: string): string => (dir ? path.resolve(base, dir) : base);
 
 const text = (value: unknown) => ({
   content: [
@@ -51,7 +50,10 @@ export async function runMcpServer(cwd: string): Promise<void> {
   server.tool(
     "doctor_deep",
     "docs/ と git 差分から AI開発プロセスの品質(要件/設計/テスト/AI指示)をスコア診断する",
-    { directory: dirSchema, since: z.string().optional().describe("差分比較基準(デフォルト main)") },
+    {
+      directory: dirSchema,
+      since: z.string().optional().describe("差分比較基準(デフォルト main)"),
+    },
     async ({ directory, since }) => text(runDeepDoctor(resolveDir(cwd, directory), since ?? "main"))
   );
 

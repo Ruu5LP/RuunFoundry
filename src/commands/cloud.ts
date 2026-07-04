@@ -49,9 +49,12 @@ export async function runCloudPush(cwd: string, options: CloudOptions): Promise<
     );
   }
 
-  const config = readConfig(cwd) as ({ projectName?: string; cloud?: { repo?: string } } | null);
+  const config = readConfig(cwd) as { projectName?: string; cloud?: { repo?: string } } | null;
   const repo = options.repo ?? config?.cloud?.repo ?? DEFAULT_CLOUD_REPO;
-  const project = (options.project ?? config?.projectName ?? path.basename(cwd)).replace(/[^\w.-]/g, "-");
+  const project = (options.project ?? config?.projectName ?? path.basename(cwd)).replace(
+    /[^\w.-]/g,
+    "-"
+  );
   const destPath = `reports/${project}/${report.name}`;
   const token = resolveToken();
 
@@ -78,5 +81,7 @@ export async function runCloudPush(cwd: string, options: CloudOptions): Promise<
     throw new Error(`送信に失敗しました(HTTP ${res.status}): ${body}`);
   }
   log.success(`レポートを送信しました: ${repo}/${destPath}`);
-  log.info(`ダッシュボード: https://${repo.split("/")[0].toLowerCase()}.github.io/${repo.split("/")[1]}/`);
+  log.info(
+    `ダッシュボード: https://${repo.split("/")[0].toLowerCase()}.github.io/${repo.split("/")[1]}/`
+  );
 }

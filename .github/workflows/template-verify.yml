@@ -4,13 +4,13 @@ name: Template Verify
 # 依存を常に最新へ保つ方針のため、上流の破壊的変更を週次で検知する。
 on:
   schedule:
-    - cron: '0 21 * * 0'   # 毎週月曜 6:00 JST
+    - cron: "0 21 * * 0" # 毎週月曜 6:00 JST
   workflow_dispatch:
   push:
     branches: [main]
     paths:
-      - 'assets/templates/**'
-      - 'src/registry/**'
+      - "assets/templates/**"
+      - "src/registry/**"
 
 jobs:
   node-templates:
@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v6
         with:
-          node-version: '24'
+          node-version: "24"
       - name: Build CLI
         run: npm ci && npm run build && npm link
       - name: Generate project
@@ -48,10 +48,10 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v6
         with:
-          node-version: '24'
+          node-version: "24"
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.5'
+          php-version: "8.5"
       - name: Build CLI
         run: npm ci && npm run build && npm link
       - name: Generate project

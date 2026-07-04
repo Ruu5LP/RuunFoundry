@@ -33,7 +33,9 @@ function runDeep(cwd: string, options: DoctorOptions): void {
   for (const s of report.scores) {
     const color = scoreColor(s.score);
     const bar = "█".repeat(Math.round(s.score / 10)).padEnd(10, "░");
-    log.info(`${color(bar)} ${String(s.score).padStart(3)}点 ${s.label}${s.docPath ? pc.dim(`(${s.docPath})`) : ""}`);
+    log.info(
+      `${color(bar)} ${String(s.score).padStart(3)}点 ${s.label}${s.docPath ? pc.dim(`(${s.docPath})`) : ""}`
+    );
     for (const f of s.failed) {
       log.info(pc.dim(`    - ${f.label} → ${f.improvement}`));
     }
