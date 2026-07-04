@@ -61,7 +61,9 @@ function discoverNodeModules(cwd: string): string[] {
 function configuredPlugins(cwd: string): string[] {
   const config = readConfig(cwd) as { plugins?: string[] } | null;
   return (config?.plugins ?? []).map((p) =>
-    p.startsWith(".") || p.startsWith("/") ? path.resolve(cwd, p) : path.join(cwd, "node_modules", p)
+    p.startsWith(".") || p.startsWith("/")
+      ? path.resolve(cwd, p)
+      : path.join(cwd, "node_modules", p)
   );
 }
 
@@ -74,7 +76,8 @@ export function loadPlugins(cwd: string, ctx: PluginContext): LoadedPlugin[] {
 
   for (const spec of specs) {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      // プラグインは名前/パスで実行時に動的ロードするため require を使う
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const mod = require(spec) as FoundruuPlugin | { default: FoundruuPlugin };
       const plugin = ("default" in mod ? mod.default : mod) as FoundruuPlugin;
       if (!plugin?.name || typeof plugin.register !== "function") {

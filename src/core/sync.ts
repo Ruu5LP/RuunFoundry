@@ -79,14 +79,15 @@ export function syncTree(
     }
     plan.push({ relPath, status });
 
-    const willWrite = status === "add" || status === "update" || (status === "user-modified" && force);
+    const willWrite =
+      status === "add" || status === "update" || (status === "user-modified" && force);
     if (willWrite && !dryRun) {
       fs.mkdirSync(path.dirname(destPath), { recursive: true });
       fs.copyFileSync(srcPath, destPath);
     }
     // 記録するハッシュ: 書き込んだ(または既に最新の)ファイルは srcHash、保護したファイルは従来の記録を維持
     hashes[relPath] =
-      willWrite || status === "unchanged" ? srcHash : recorded[relPath] ?? hashFile(destPath);
+      willWrite || status === "unchanged" ? srcHash : (recorded[relPath] ?? hashFile(destPath));
   }
 
   return { plan, hashes };

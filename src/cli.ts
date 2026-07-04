@@ -40,9 +40,17 @@ program
   .option("-d, --description <text>", "プロジェクトの説明")
   .option("-f, --features <list>", "導入する feature をカンマ区切りで指定(例: docker,vitest)")
   .option("-y, --yes", "対話プロンプトを出さずデフォルト値で実行する")
-  .action(async (opts: { template?: string; name?: string; description?: string; features?: string; yes?: boolean }) => {
-    await wrap(() => runInit(process.cwd(), opts));
-  });
+  .action(
+    async (opts: {
+      template?: string;
+      name?: string;
+      description?: string;
+      features?: string;
+      yes?: boolean;
+    }) => {
+      await wrap(() => runInit(process.cwd(), opts));
+    }
+  );
 
 const workflow = program.command("workflow").description("Workflow / Prompt / Rules を管理する");
 workflow
@@ -65,11 +73,16 @@ program
 
 program
   .command("update")
-  .description("Workflow / Prompt / Rules を最新へ更新する（GitHub から取得、失敗時は同梱アセット）")
+  .description(
+    "Workflow / Prompt / Rules を最新へ更新する（GitHub から取得、失敗時は同梱アセット）"
+  )
   .option("-f, --force", "ユーザー編集済みファイルも上書きする")
   .option("--diff", "差分の表示のみで書き込まない")
   .option("--local", "GitHub から取得せず CLI 同梱アセットを使う")
-  .option("--only <paths...>", "指定パスのみ更新する(例: --only .ai/workflows .ai/prompts/session-workflow.md)")
+  .option(
+    "--only <paths...>",
+    "指定パスのみ更新する(例: --only .ai/workflows .ai/prompts/session-workflow.md)"
+  )
   .action(async (opts: { force?: boolean; diff?: boolean; local?: boolean; only?: string[] }) => {
     await wrap(() => runUpdate(process.cwd(), opts));
   });
@@ -140,7 +153,9 @@ program
   .action(() => {
     if (loadedPlugins.length === 0) {
       log.info("プラグインは読み込まれていません。");
-      log.info("  node_modules の foundruu-plugin-* または foundruu.json の plugins で追加できます。");
+      log.info(
+        "  node_modules の foundruu-plugin-* または foundruu.json の plugins で追加できます。"
+      );
       return;
     }
     for (const p of loadedPlugins) {

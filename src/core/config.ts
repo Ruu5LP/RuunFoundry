@@ -31,9 +31,18 @@ export function writeConfig(cwd: string, config: FoundruuConfig): void {
 }
 
 export function cliVersion(): string {
-  // dist/core/config.js からも src/core/config.ts からも ../../package.json
-  const pkg = JSON.parse(
-    fs.readFileSync(path.resolve(__dirname, "..", "..", "package.json"), "utf8")
-  ) as { version: string };
-  return pkg.version;
+  // 実行形態ごとに package.json の位置が変わるため候補を順に探す:
+  //   - dist/core/config.js / src/core/config.ts … ../../package.json
+  //   - GitHub Action 用バンドル(action/index.cjs) … ../package.json
+  const candidates = [
+    path.resolve(__dirname, "..", "..", "package.json"),
+    path.resolve(__dirname, "..", "package.json"),
+    path.resolve(__dirname, "package.json"),
+  ];
+  for (const file of candidates) {
+    if (fs.existsSync(file)) {
+      return (JSON.parse(fs.readFileSync(file, "utf8")) as { version: string }).version;
+    }
+  }
+  return "0.0.0";
 }

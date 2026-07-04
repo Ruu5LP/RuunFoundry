@@ -48,7 +48,9 @@ export function fetchWorkflowAssets(options: { local?: boolean } = {}): {
     }
     log.warn("リモートリポジトリに assets/workflow が見つかりません。同梱アセットを使用します。");
   } catch {
-    log.warn("GitHub から最新アセットを取得できませんでした(オフライン?)。同梱アセットを使用します。");
+    log.warn(
+      "GitHub から最新アセットを取得できませんでした(オフライン?)。同梱アセットを使用します。"
+    );
   }
   return { root: workflowRoot(), source: "bundled" };
 }

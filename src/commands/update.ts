@@ -29,7 +29,9 @@ const STATUS_LABEL: Record<SyncPlanEntry["status"], string> = {
 export function runUpdate(cwd: string, options: UpdateOptions): void {
   const config = readConfig(cwd);
   if (!config?.workflow) {
-    log.warn("このプロジェクトには Workflow が導入されていません。foundruu workflow install を実行してください。");
+    log.warn(
+      "このプロジェクトには Workflow が導入されていません。foundruu workflow install を実行してください。"
+    );
     process.exitCode = 1;
     return;
   }
@@ -63,12 +65,16 @@ export function runUpdate(cwd: string, options: UpdateOptions): void {
   const protectedCount = plan.filter((e) => e.status === "user-modified").length;
   if (options.diff) {
     log.info("");
-    log.info("--diff のため書き込みは行っていません。適用するには foundruu update を実行してください。");
+    log.info(
+      "--diff のため書き込みは行っていません。適用するには foundruu update を実行してください。"
+    );
     return;
   }
 
   if (protectedCount > 0 && !options.force) {
-    log.warn(`ユーザー編集済みのため保護したファイルが ${protectedCount}件あります(上書きは --force)。`);
+    log.warn(
+      `ユーザー編集済みのため保護したファイルが ${protectedCount}件あります(上書きは --force)。`
+    );
   }
 
   config.workflow = {

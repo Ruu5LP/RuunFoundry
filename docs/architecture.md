@@ -48,7 +48,9 @@ foundruu/
 ## 設計判断
 
 ### 設定ファイル: `foundruu.json`
+
 導入先プロジェクトのルートに生成。update の差分・バージョン管理の基盤。
+
 ```json
 {
   "version": "0.1.0",
@@ -59,12 +61,14 @@ foundruu/
 ```
 
 ### Template 管理
+
 - `src/registry/templates.ts` にテンプレートを宣言的に登録（id / label / language / features / status）
 - `available` 以外のテンプレート（laravel-react 等）は `planned` として登録し、指定時に案内を出す
 - 合成順: `base` → `languages/<lang>` → `features/*`（テンプレート定義に従う）→ `ai/`
 - `.hbs` は Handlebars レンダリング、`package.json.patch` はディープマージ、他はコピー
 
 ### Doctor 管理
+
 - `DoctorCheck = { id, label, category, severity, check(ctx) }` の配列
 - チェック追加 = `checks.ts` に 1 エントリ追加のみ
 - MVP チェック: README / LICENSE / .gitignore / .env.example / package.json|composer.json / Docker / GitHub Actions / AI Rules / Workflow / Prompt
@@ -72,11 +76,13 @@ foundruu/
 - `--json` で機械可読出力（GitHub Actions 連携用）
 
 ### Update 方法
+
 - MVP: CLI 同梱アセットのバージョンと `foundruu.json` を比較し、workflow アセットを再配置（`--force` で無条件上書き）
 - 将来: degit で GitHub から最新を取得 → ローカルキャッシュ → 差分表示 → 選択適用。
   `foundruu.json` にバージョンとハッシュを記録する前提の構造にしてあるため互換のまま拡張可能
 
 ### 拡張ポイント（将来）
+
 - **Plugin**: commander のサブコマンド登録を `commands/` の配列駆動にしており、`foundruu-plugin-*` パッケージの動的ロードを差し込める
 - **npm 公開**: `bin` / `files` / `prepublishOnly` 設定済み。`npx foundruu` で利用可能
 - **GitHub Actions**: `foundruu doctor --json` の exit code / JSON 出力を CI で消費
@@ -84,11 +90,11 @@ foundruu/
 
 ## 技術スタック
 
-| 項目 | 選定 |
-|---|---|
-| 言語 | TypeScript (strict) |
-| ランタイム | Node.js >= 20 (LTS) |
-| CLI | commander |
-| テンプレート | handlebars |
-| テスト | vitest |
-| ビルド | tsc + assets コピー |
+| 項目         | 選定                |
+| ------------ | ------------------- |
+| 言語         | TypeScript (strict) |
+| ランタイム   | Node.js >= 20 (LTS) |
+| CLI          | commander           |
+| テンプレート | handlebars          |
+| テスト       | vitest              |
+| ビルド       | tsc + assets コピー |

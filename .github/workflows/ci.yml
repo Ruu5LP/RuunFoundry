@@ -14,13 +14,23 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version: '24'
-          cache: 'npm'
+          node-version: "24"
+          cache: "npm"
 
       - run: npm ci
+      - run: npm run lint
+      - run: npm run format:check
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
+
+      # コミット済みの Action バンドル(action/index.cjs)がソースと一致しているか検証。
+      # ずれていたら「npm run build:action して commit し忘れ」なので CI を失敗させる。
+      - name: Verify action bundle is up to date
+        run: |
+          npm run build:action
+          git diff --exit-code action/index.cjs \
+            || (echo "::error::action/index.cjs が古いです。'npm run build:action' を実行してコミットしてください。" && exit 1)
 
       # ビルド成果物のスモークテスト: 実際に init → doctor → session を流す
       - name: Smoke test CLI

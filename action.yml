@@ -6,40 +6,34 @@ inputs:
   path:
     description: 診断対象ディレクトリ(リポジトリルートからの相対パス)
     required: false
-    default: '.'
+    default: "."
   fail-on:
-    description: 'ジョブを失敗させる条件: error(fail項目あり) / warning(warn項目でも) / never'
+    description: "ジョブを失敗させる条件: error(fail項目あり) / warning(warn項目でも) / never"
     required: false
-    default: 'error'
+    default: "error"
   deep:
     description: doctor --deep(プロセス品質スコア診断)も実行する場合は true
     required: false
-    default: 'false'
+    default: "false"
   since:
     description: --deep の差分比較基準
     required: false
-    default: 'main'
+    default: "main"
 
 runs:
   using: composite
   steps:
     - uses: actions/setup-node@v6
       with:
-        node-version: '24'
+        node-version: "24"
 
-    - name: Install FoundRuu CLI
-      shell: bash
-      run: |
-        cd "${{ github.action_path }}"
-        npm ci --omit=dev --ignore-scripts
-        npm install --no-save typescript @types/node
-        npx tsc -p tsconfig.json
-
+    # 依存ごと単一ファイルにバンドル済み(action/index.cjs)なので、
+    # ランタイムでの npm install / TypeScript ビルドは不要。node で実行するだけ。
     - name: Run foundruu doctor
       shell: bash
       working-directory: ${{ inputs.path }}
       run: |
-        DOCTOR="node ${{ github.action_path }}/dist/cli.js"
+        DOCTOR="node ${{ github.action_path }}/action/index.cjs"
         set +e
         $DOCTOR doctor --json > /tmp/foundruu-doctor.json
         set -e
@@ -79,7 +73,7 @@ runs:
         git fetch origin "${{ inputs.since }}" --depth=50 || true
         echo '### FoundRuu Doctor --deep' >> "$GITHUB_STEP_SUMMARY"
         echo '```' >> "$GITHUB_STEP_SUMMARY"
-        node "${{ github.action_path }}/dist/cli.js" doctor --deep --since "${{ inputs.since }}" >> "$GITHUB_STEP_SUMMARY"
+        node "${{ github.action_path }}/action/index.cjs" doctor --deep --since "${{ inputs.since }}" >> "$GITHUB_STEP_SUMMARY"
         echo '```' >> "$GITHUB_STEP_SUMMARY"
 
 branding:

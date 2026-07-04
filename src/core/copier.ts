@@ -23,22 +23,32 @@ function createHandlebars(ctx: TemplateContext): typeof Handlebars {
   const hbs = Handlebars.create();
   hbs.registerHelper("hasFeature", (id: string) => ctx.features.includes(id));
   hbs.registerHelper("hasAi", (id: string) => ctx.aiProviders.includes(id));
-  hbs.registerHelper("eq", function (this: unknown, a: unknown, b: unknown, options: Handlebars.HelperOptions) {
-    if (options && typeof options.fn === "function") {
-      return a === b ? options.fn(this) : options.inverse(this);
+  hbs.registerHelper(
+    "eq",
+    function (this: unknown, a: unknown, b: unknown, options: Handlebars.HelperOptions) {
+      if (options && typeof options.fn === "function") {
+        return a === b ? options.fn(this) : options.inverse(this);
+      }
+      return a === b;
     }
-    return a === b;
-  });
+  );
   return hbs as typeof Handlebars;
 }
 
-function deepMerge(target: Record<string, unknown>, source: Record<string, unknown>): Record<string, unknown> {
+function deepMerge(
+  target: Record<string, unknown>,
+  source: Record<string, unknown>
+): Record<string, unknown> {
   const out: Record<string, unknown> = { ...target };
   for (const [key, value] of Object.entries(source)) {
     const existing = out[key];
     if (
-      value && typeof value === "object" && !Array.isArray(value) &&
-      existing && typeof existing === "object" && !Array.isArray(existing)
+      value &&
+      typeof value === "object" &&
+      !Array.isArray(value) &&
+      existing &&
+      typeof existing === "object" &&
+      !Array.isArray(existing)
     ) {
       out[key] = deepMerge(existing as Record<string, unknown>, value as Record<string, unknown>);
     } else if (Array.isArray(value) && Array.isArray(existing)) {

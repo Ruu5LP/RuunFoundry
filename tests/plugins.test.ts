@@ -14,7 +14,10 @@ let ctx: PluginContext;
 const writePlugin = (dir: string, body: string) => {
   const full = path.join(tmp, "node_modules", dir);
   fs.mkdirSync(full, { recursive: true });
-  fs.writeFileSync(path.join(full, "package.json"), JSON.stringify({ name: dir, main: "index.js" }));
+  fs.writeFileSync(
+    path.join(full, "package.json"),
+    JSON.stringify({ name: dir, main: "index.js" })
+  );
   fs.writeFileSync(path.join(full, "index.js"), body);
 };
 
