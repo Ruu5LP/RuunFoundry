@@ -122,6 +122,8 @@ module.exports = {
 };
 ```
 
+書き方・ローカル開発・npm 公開までは [docs/PLUGIN_DEV.md](docs/PLUGIN_DEV.md) を参照してください。
+
 ### 公式プラグイン
 
 - [foundruu-plugin-security](plugins/foundruu-plugin-security/) — SECURITY.md / .env の gitignore / 依存更新自動化のチェックを追加（`npm i -D foundruu-plugin-security`）。自作プラグインの参考実装でもあります
@@ -191,6 +193,8 @@ lint / format:check / typecheck / test:coverage / build は CI（[.github/workfl
 - [docs/investigation.md](docs/investigation.md) — 3リポジトリの調査結果
 - [docs/architecture.md](docs/architecture.md) — 全体アーキテクチャ・設計判断
 - [docs/roadmap.md](docs/roadmap.md) — MVP以降のロードマップ
+- [docs/PLUGIN_DEV.md](docs/PLUGIN_DEV.md) — プラグイン開発ガイド
+- [docs/cloud.md](docs/cloud.md) — Cloud(レポート集約)の設計
 
 ## ライセンス
 
