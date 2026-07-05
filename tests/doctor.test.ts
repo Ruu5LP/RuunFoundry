@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import fs from "fs";
 import os from "os";
 import path from "path";
-import { runDoctor } from "../src/doctor/runner";
+import { runDoctor, runDoctorFix } from "../src/doctor/runner";
 import { checks } from "../src/doctor/checks";
 
 let tmp: string;
@@ -46,5 +46,54 @@ describe("runDoctor", () => {
     const report = runDoctor(tmp);
     const workflow = report.results.find((r) => r.id === "workflow");
     expect(workflow?.hint).toContain("foundruu workflow install");
+  });
+});
+
+/**
+ * runDoctorFix(doctor --fix)のテスト。
+ * fix を持つチェック(README / LICENSE / .gitignore / .env.example)は欠如時に
+ * 最小構成を自動生成し、fix を持たないチェックは unfixable として手動対応に回す。
+ * 既存ファイルは上書きせず、.foundruurc で無効化したチェックは対象外にする。
+ */
+describe("runDoctorFix", () => {
+  it("欠けている scaffold ファイルを生成し、その後 doctor が pass する", () => {
+    const { fixed, unfixable } = runDoctorFix(tmp);
+
+    const fixedLabels = fixed.map((f) => f.label).sort();
+    expect(fixedLabels).toEqual([".env.example", ".gitignore", "LICENSE", "README"]);
+    // fix を持たない失敗項目は手動対応に回る
+    expect(unfixable.map((u) => u.label)).toContain("Workflow");
+
+    for (const rel of ["README.md", "LICENSE", ".gitignore", ".env.example"]) {
+      expect(fs.existsSync(path.join(tmp, rel))).toBe(true);
+    }
+    // 生成済みの 4 項目は pass になる
+    const report = runDoctor(tmp);
+    for (const id of ["readme", "license", "gitignore", "env-example"]) {
+      expect(report.results.find((r) => r.id === id)?.status).toBe("pass");
+    }
+  });
+
+  it("README は package.json の name をタイトルに使う", () => {
+    fs.writeFileSync(path.join(tmp, "package.json"), JSON.stringify({ name: "my-pkg" }));
+    runDoctorFix(tmp);
+    expect(fs.readFileSync(path.join(tmp, "README.md"), "utf8")).toContain("# my-pkg");
+  });
+
+  it("既存ファイルは上書きしない(pass 項目は触らない)", () => {
+    fs.writeFileSync(path.join(tmp, "README.md"), "ORIGINAL");
+    const { fixed } = runDoctorFix(tmp);
+    expect(fixed.map((f) => f.label)).not.toContain("README");
+    expect(fs.readFileSync(path.join(tmp, "README.md"), "utf8")).toBe("ORIGINAL");
+  });
+
+  it(".foundruurc で無効化したチェックは修復しない", () => {
+    fs.writeFileSync(
+      path.join(tmp, ".foundruurc"),
+      JSON.stringify({ doctor: { disable: ["readme"] } })
+    );
+    const { fixed } = runDoctorFix(tmp);
+    expect(fixed.map((f) => f.label)).not.toContain("README");
+    expect(fs.existsSync(path.join(tmp, "README.md"))).toBe(false);
   });
 });

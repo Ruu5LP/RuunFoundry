@@ -1,5 +1,5 @@
 import pc from "picocolors";
-import { runDoctor } from "../doctor/runner";
+import { runDoctor, runDoctorFix } from "../doctor/runner";
 import { runDeepDoctor } from "../doctor/deep";
 import { writeDeepReports } from "../doctor/report";
 import { log } from "../core/logger";
@@ -10,6 +10,8 @@ export interface DoctorOptions {
   since?: string;
   /** --deep レポート(md/html/json)の出力先ディレクトリ */
   report?: string;
+  /** 修復可能な項目を自動生成してから診断する */
+  fix?: boolean;
 }
 
 function scoreColor(score: number): (s: string) => string {
@@ -49,6 +51,21 @@ export function runDoctorCommand(cwd: string, options: DoctorOptions): void {
     runDeep(cwd, options);
     return;
   }
+
+  if (options.fix) {
+    const { fixed, unfixable } = runDoctorFix(cwd);
+    if (fixed.length === 0) {
+      log.info("自動修復できる項目はありませんでした。");
+    } else {
+      for (const f of fixed) log.success(f.message);
+    }
+    for (const u of unfixable) {
+      log.warn(`手動対応が必要: ${u.label} → ${u.hint}`);
+    }
+    log.info("");
+    // 修復後の状態を続けて診断表示する(下の通常フローへ)
+  }
+
   const report = runDoctor(cwd);
 
   if (options.json) {

@@ -20,20 +20,20 @@ npm install && npm run build && npm link
 
 ## コマンド
 
-| コマンド                                                  | 説明                                                                                     |
-| --------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| `foundruu init [--template <id>] [--features <list>]`     | テンプレート + Workflow + Rules + Doctor設定を一括導入                                   |
-| `foundruu workflow install`                               | Workflow / Prompt / Rules（`.ai/`）のみを既存リポジトリへ導入                            |
-| `foundruu doctor [--json]`                                | リポジトリがAI開発可能な状態か診断（fail ありで exit 1）                                 |
-| `foundruu doctor --deep [--since <ref>] [--report <dir>]` | AI開発プロセス品質をスコア診断（md/html/json レポート出力可）                            |
-| `foundruu update [--force] [--diff] [--only <paths...>]`  | Workflow / Prompt / Rules を最新へ更新（パス指定・差分確認可）                           |
-| `foundruu session start <name>` / `session list`          | AI開発セッションの作成 / 一覧                                                            |
-| `foundruu templates`                                      | 利用可能なテンプレート一覧                                                               |
-| `foundruu plugins`                                        | 読み込まれているプラグイン一覧                                                           |
-| `foundruu mcp`                                            | MCP サーバーを起動（AIエージェント連携）                                                 |
-| `foundruu dashboard [--dir <dir>] [--out <file>]`         | deep レポート履歴からスコア推移ダッシュボード(HTML)を生成（既定: `reports/index.html`）  |
-| `foundruu cloud push`                                     | 最新の deep レポートを [foundruu-cloud](https://github.com/Ruu5LP/foundruu-cloud) へ送信 |
-| `foundruu --help` / `--version`                           | ヘルプ / バージョン                                                                      |
+| コマンド                                                  | 説明                                                                                               |
+| --------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `foundruu init [--template <id>] [--features <list>]`     | テンプレート + Workflow + Rules + Doctor設定を一括導入                                             |
+| `foundruu workflow install`                               | Workflow / Prompt / Rules（`.ai/`）のみを既存リポジトリへ導入                                      |
+| `foundruu doctor [--json] [--fix]`                        | リポジトリがAI開発可能な状態か診断（`--fix` で README/LICENSE/.gitignore/.env.example を自動生成） |
+| `foundruu doctor --deep [--since <ref>] [--report <dir>]` | AI開発プロセス品質をスコア診断（md/html/json レポート出力可）                                      |
+| `foundruu update [--force] [--diff] [--only <paths...>]`  | Workflow / Prompt / Rules を最新へ更新（パス指定・差分確認可）                                     |
+| `foundruu session start <name>` / `session list`          | AI開発セッションの作成 / 一覧                                                                      |
+| `foundruu templates`                                      | 利用可能なテンプレート一覧                                                                         |
+| `foundruu plugins`                                        | 読み込まれているプラグイン一覧                                                                     |
+| `foundruu mcp`                                            | MCP サーバーを起動（AIエージェント連携）                                                           |
+| `foundruu dashboard [--dir <dir>] [--out <file>]`         | deep レポート履歴からスコア推移ダッシュボード(HTML)を生成（既定: `reports/index.html`）            |
+| `foundruu cloud push`                                     | 最新の deep レポートを [foundruu-cloud](https://github.com/Ruu5LP/foundruu-cloud) へ送信           |
+| `foundruu --help` / `--version`                           | ヘルプ / バージョン                                                                                |
 
 ## 利用フロー
 
@@ -75,6 +75,8 @@ Docker / GitHub Actions / AI Rules / Workflow / Prompt / foundruu.json
 
 チェックは [src/doctor/checks.ts](src/doctor/checks.ts) に宣言的に定義されており、1エントリ追加するだけで拡張できます。
 `--json` 出力と exit code により GitHub Actions からも利用できます。
+
+`foundruu doctor --fix` は、欠けている README / LICENSE / .gitignore / .env.example を最小構成で自動生成してから再診断します（既存ファイルは上書きしません）。
 
 プロジェクトルートの `.foundruurc` でカスタマイズできます:
 

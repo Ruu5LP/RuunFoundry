@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import { checks as defaultChecks } from "./checks";
 import { applyRc, readRc } from "./rc";
-import { CheckResult, DoctorCheck, DoctorContext, DoctorReport } from "./types";
+import { CheckResult, DoctorCheck, DoctorContext, DoctorReport, FixReport } from "./types";
 
 export function createContext(cwd: string): DoctorContext {
   const exists = (rel: string): boolean => fs.existsSync(path.join(cwd, rel));
@@ -32,4 +32,24 @@ export function runDoctor(cwd: string, checkList: DoctorCheck[] = defaultChecks)
   const warned = results.filter((r) => r.status === "warn").length;
   const failed = results.filter((r) => r.status === "fail").length;
   return { results, passed, warned, failed, ok: failed === 0 };
+}
+
+/**
+ * 失敗しているチェックのうち fix を持つものを自動生成する(--fix)。
+ * .foundruurc で無効化されたチェックは対象外(applyRc が除外する)。
+ */
+export function runDoctorFix(cwd: string, checkList: DoctorCheck[] = defaultChecks): FixReport {
+  const ctx = createContext(cwd);
+  const effective = applyRc(checkList, readRc(cwd));
+  const fixed: FixReport["fixed"] = [];
+  const unfixable: FixReport["unfixable"] = [];
+  for (const c of effective) {
+    if (c.check(ctx)) continue; // pass しているものは触らない
+    if (c.fix) {
+      fixed.push({ label: c.label, message: c.fix(ctx) });
+    } else {
+      unfixable.push({ label: c.label, hint: c.hint });
+    }
+  }
+  return { fixed, unfixable };
 }
