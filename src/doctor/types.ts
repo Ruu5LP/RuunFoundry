@@ -17,6 +17,19 @@ export interface DoctorCheck {
   /** 見つからなかったときの修正ガイド */
   hint: string;
   check(ctx: DoctorContext): boolean;
+  /**
+   * `doctor --fix` 時に、欠けているものを最小構成で自動生成する。
+   * check が false(=欠如)のときだけ呼ばれるため既存ファイルは上書きしない。
+   * 返り値は実施内容の説明。未定義のチェックは --fix 対象外(hint に沿って手動対応)。
+   */
+  fix?(ctx: DoctorContext): string;
+}
+
+export interface FixReport {
+  /** 自動生成できた項目 */
+  fixed: { label: string; message: string }[];
+  /** fix を持たず手動対応が必要な失敗項目 */
+  unfixable: { label: string; hint: string }[];
 }
 
 export interface CheckResult {

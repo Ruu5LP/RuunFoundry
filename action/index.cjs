@@ -1222,7 +1222,7 @@ var require_handlebars_runtime = __commonJS({
     var runtime = _interopRequireWildcard(_handlebarsRuntime);
     var _handlebarsNoConflict = require_no_conflict();
     var _handlebarsNoConflict2 = _interopRequireDefault(_handlebarsNoConflict);
-    function create() {
+    function create2() {
       var hb = new base.HandlebarsEnvironment();
       Utils.extend(hb, base);
       hb.SafeString = _handlebarsSafeString2["default"];
@@ -1235,8 +1235,8 @@ var require_handlebars_runtime = __commonJS({
       };
       return hb;
     }
-    var inst = create();
-    inst.create = create;
+    var inst = create2();
+    inst.create = create2;
     _handlebarsNoConflict2["default"](inst);
     inst["default"] = inst;
     exports2["default"] = inst;
@@ -1258,13 +1258,13 @@ var require_ast = __commonJS({
         helperExpression: function helperExpression(node) {
           return node.type === "SubExpression" || (node.type === "MustacheStatement" || node.type === "BlockStatement") && !!(node.params && node.params.length || node.hash);
         },
-        scopedId: function scopedId(path18) {
-          return /^\.|this\b/.test(path18.original);
+        scopedId: function scopedId(path19) {
+          return /^\.|this\b/.test(path19.original);
         },
         // an ID is simple if it only has one part, and that part is not
         // `..` or `this`.
-        simpleId: function simpleId(path18) {
-          return path18.parts.length === 1 && !AST.helpers.scopedId(path18) && !path18.depth;
+        simpleId: function simpleId(path19) {
+          return path19.parts.length === 1 && !AST.helpers.scopedId(path19) && !path19.depth;
         }
       }
     };
@@ -2334,12 +2334,12 @@ var require_helpers2 = __commonJS({
         loc
       };
     }
-    function prepareMustache(path18, params, hash2, open, strip, locInfo) {
+    function prepareMustache(path19, params, hash2, open, strip, locInfo) {
       var escapeFlag = open.charAt(3) || open.charAt(2), escaped = escapeFlag !== "{" && escapeFlag !== "&";
       var decorator = /\*/.test(open);
       return {
         type: decorator ? "Decorator" : "MustacheStatement",
-        path: path18,
+        path: path19,
         params,
         hash: hash2,
         escaped,
@@ -2657,9 +2657,9 @@ var require_compiler = __commonJS({
       },
       DecoratorBlock: function DecoratorBlock(decorator) {
         var program3 = decorator.program && this.compileProgram(decorator.program);
-        var params = this.setupFullMustacheParams(decorator, program3, void 0), path18 = decorator.path;
+        var params = this.setupFullMustacheParams(decorator, program3, void 0), path19 = decorator.path;
         this.useDecorators = true;
-        this.opcode("registerDecorator", params.length, path18.original);
+        this.opcode("registerDecorator", params.length, path19.original);
       },
       PartialStatement: function PartialStatement(partial2) {
         this.usePartial = true;
@@ -2723,46 +2723,46 @@ var require_compiler = __commonJS({
         }
       },
       ambiguousSexpr: function ambiguousSexpr(sexpr, program3, inverse) {
-        var path18 = sexpr.path, name = path18.parts[0], isBlock = program3 != null || inverse != null;
-        this.opcode("getContext", path18.depth);
+        var path19 = sexpr.path, name = path19.parts[0], isBlock = program3 != null || inverse != null;
+        this.opcode("getContext", path19.depth);
         this.opcode("pushProgram", program3);
         this.opcode("pushProgram", inverse);
-        path18.strict = true;
-        this.accept(path18);
+        path19.strict = true;
+        this.accept(path19);
         this.opcode("invokeAmbiguous", name, isBlock);
       },
       simpleSexpr: function simpleSexpr(sexpr) {
-        var path18 = sexpr.path;
-        path18.strict = true;
-        this.accept(path18);
+        var path19 = sexpr.path;
+        path19.strict = true;
+        this.accept(path19);
         this.opcode("resolvePossibleLambda");
       },
       helperSexpr: function helperSexpr(sexpr, program3, inverse) {
-        var params = this.setupFullMustacheParams(sexpr, program3, inverse), path18 = sexpr.path, name = path18.parts[0];
+        var params = this.setupFullMustacheParams(sexpr, program3, inverse), path19 = sexpr.path, name = path19.parts[0];
         if (this.options.knownHelpers[name]) {
           this.opcode("invokeKnownHelper", params.length, name);
         } else if (this.options.knownHelpersOnly) {
           throw new _exception2["default"]("You specified knownHelpersOnly, but used the unknown helper " + name, sexpr);
         } else {
-          path18.strict = true;
-          path18.falsy = true;
-          this.accept(path18);
-          this.opcode("invokeHelper", params.length, path18.original, _ast2["default"].helpers.simpleId(path18));
+          path19.strict = true;
+          path19.falsy = true;
+          this.accept(path19);
+          this.opcode("invokeHelper", params.length, path19.original, _ast2["default"].helpers.simpleId(path19));
         }
       },
-      PathExpression: function PathExpression(path18) {
-        this.addDepth(path18.depth);
-        this.opcode("getContext", path18.depth);
-        var name = path18.parts[0], scoped = _ast2["default"].helpers.scopedId(path18), blockParamId = !path18.depth && !scoped && this.blockParamIndex(name);
+      PathExpression: function PathExpression(path19) {
+        this.addDepth(path19.depth);
+        this.opcode("getContext", path19.depth);
+        var name = path19.parts[0], scoped = _ast2["default"].helpers.scopedId(path19), blockParamId = !path19.depth && !scoped && this.blockParamIndex(name);
         if (blockParamId) {
-          this.opcode("lookupBlockParam", blockParamId, path18.parts);
+          this.opcode("lookupBlockParam", blockParamId, path19.parts);
         } else if (!name) {
           this.opcode("pushContext");
-        } else if (path18.data) {
+        } else if (path19.data) {
           this.options.data = true;
-          this.opcode("lookupData", path18.depth, path18.parts, path18.strict);
+          this.opcode("lookupData", path19.depth, path19.parts, path19.strict);
         } else {
-          this.opcode("lookupOnContext", path18.parts, path18.falsy, path18.strict, scoped);
+          this.opcode("lookupOnContext", path19.parts, path19.falsy, path19.strict, scoped);
         }
       },
       StringLiteral: function StringLiteral(string4) {
@@ -3112,16 +3112,16 @@ var require_util = __commonJS({
     }
     exports2.urlGenerate = urlGenerate;
     function normalize(aPath) {
-      var path18 = aPath;
+      var path19 = aPath;
       var url2 = urlParse(aPath);
       if (url2) {
         if (!url2.path) {
           return aPath;
         }
-        path18 = url2.path;
+        path19 = url2.path;
       }
-      var isAbsolute = exports2.isAbsolute(path18);
-      var parts = path18.split(/\/+/);
+      var isAbsolute = exports2.isAbsolute(path19);
+      var parts = path19.split(/\/+/);
       for (var part, up = 0, i = parts.length - 1; i >= 0; i--) {
         part = parts[i];
         if (part === ".") {
@@ -3138,15 +3138,15 @@ var require_util = __commonJS({
           }
         }
       }
-      path18 = parts.join("/");
-      if (path18 === "") {
-        path18 = isAbsolute ? "/" : ".";
+      path19 = parts.join("/");
+      if (path19 === "") {
+        path19 = isAbsolute ? "/" : ".";
       }
       if (url2) {
-        url2.path = path18;
+        url2.path = path19;
         return urlGenerate(url2);
       }
-      return path18;
+      return path19;
     }
     exports2.normalize = normalize;
     function join(aRoot, aPath) {
@@ -5788,7 +5788,7 @@ var require_handlebars = __commonJS({
     var _handlebarsNoConflict = require_no_conflict();
     var _handlebarsNoConflict2 = _interopRequireDefault(_handlebarsNoConflict);
     var _create = _handlebarsRuntime2["default"].create;
-    function create() {
+    function create2() {
       var hb = _create();
       hb.compile = function(input, options) {
         return _handlebarsCompilerCompiler.compile(input, options, hb);
@@ -5804,8 +5804,8 @@ var require_handlebars = __commonJS({
       hb.parseWithoutProcessing = _handlebarsCompilerBase.parseWithoutProcessing;
       return hb;
     }
-    var inst = create();
-    inst.create = create;
+    var inst = create2();
+    inst.create = create2;
     _handlebarsNoConflict2["default"](inst);
     inst.Visitor = _handlebarsCompilerVisitor2["default"];
     inst["default"] = inst;
@@ -5929,8 +5929,8 @@ var require_printer = __commonJS({
       return this.accept(sexpr.path) + " " + params + hash2;
     };
     PrintVisitor.prototype.PathExpression = function(id) {
-      var path18 = id.parts.join("/");
-      return (id.data ? "@" : "") + "PATH:" + path18;
+      var path19 = id.parts.join("/");
+      return (id.data ? "@" : "") + "PATH:" + path19;
     };
     PrintVisitor.prototype.StringLiteral = function(string4) {
       return '"' + string4.value + '"';
@@ -5969,8 +5969,8 @@ var require_lib = __commonJS({
     handlebars.print = printer.print;
     module2.exports = handlebars;
     function extension(module3, filename) {
-      var fs17 = require("fs");
-      var templateString = fs17.readFileSync(filename, "utf8");
+      var fs18 = require("fs");
+      var templateString = fs18.readFileSync(filename, "utf8");
       module3.exports = handlebars.compile(templateString);
     }
     if (typeof require !== "undefined" && require.extensions) {
@@ -6286,10 +6286,46 @@ var init_workflow = __esm({
 });
 
 // src/doctor/checks.ts
-var checks;
+function projectName(cwd) {
+  try {
+    const pkg = JSON.parse(import_fs7.default.readFileSync(import_path7.default.join(cwd, "package.json"), "utf8"));
+    if (pkg.name) return pkg.name;
+  } catch {
+  }
+  return import_path7.default.basename(cwd);
+}
+function create(cwd, rel, content) {
+  import_fs7.default.writeFileSync(import_path7.default.join(cwd, rel), content);
+  return `${rel} \u3092\u4F5C\u6210\u3057\u307E\u3057\u305F`;
+}
+var import_fs7, import_path7, MIT_LICENSE, checks;
 var init_checks = __esm({
   "src/doctor/checks.ts"() {
     "use strict";
+    import_fs7 = __toESM(require("fs"));
+    import_path7 = __toESM(require("path"));
+    MIT_LICENSE = (year) => `MIT License
+
+Copyright (c) ${year} <COPYRIGHT HOLDER>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+`;
     checks = [
       {
         id: "readme",
@@ -6297,7 +6333,15 @@ var init_checks = __esm({
         category: "\u30C9\u30AD\u30E5\u30E1\u30F3\u30C8",
         severity: "error",
         hint: "README.md \u3092\u4F5C\u6210\u3057\u3001\u30D7\u30ED\u30B8\u30A7\u30AF\u30C8\u306E\u76EE\u7684\u30FB\u30BB\u30C3\u30C8\u30A2\u30C3\u30D7\u624B\u9806\u3092\u66F8\u3044\u3066\u304F\u3060\u3055\u3044",
-        check: (ctx) => ctx.existsAny(["README.md", "README"])
+        check: (ctx) => ctx.existsAny(["README.md", "README"]),
+        fix: (ctx) => create(
+          ctx.cwd,
+          "README.md",
+          `# ${projectName(ctx.cwd)}
+
+> TODO: \u30D7\u30ED\u30B8\u30A7\u30AF\u30C8\u306E\u76EE\u7684\u3068\u30BB\u30C3\u30C8\u30A2\u30C3\u30D7\u624B\u9806\u3092\u8A18\u8FF0\u3057\u3066\u304F\u3060\u3055\u3044\u3002
+`
+        )
       },
       {
         id: "license",
@@ -6305,7 +6349,8 @@ var init_checks = __esm({
         category: "\u30C9\u30AD\u30E5\u30E1\u30F3\u30C8",
         severity: "warn",
         hint: "LICENSE \u30D5\u30A1\u30A4\u30EB\u3092\u8FFD\u52A0\u3057\u3066\u304F\u3060\u3055\u3044",
-        check: (ctx) => ctx.existsAny(["LICENSE", "LICENSE.md", "LICENSE.txt"])
+        check: (ctx) => ctx.existsAny(["LICENSE", "LICENSE.md", "LICENSE.txt"]),
+        fix: (ctx) => create(ctx.cwd, "LICENSE", MIT_LICENSE((/* @__PURE__ */ new Date()).getFullYear()))
       },
       {
         id: "gitignore",
@@ -6313,7 +6358,8 @@ var init_checks = __esm({
         category: "\u30EA\u30DD\u30B8\u30C8\u30EA\u8A2D\u5B9A",
         severity: "error",
         hint: ".gitignore \u3092\u4F5C\u6210\u3057\u3066\u304F\u3060\u3055\u3044\uFF08foundruu init \u3067\u5C0E\u5165\u3067\u304D\u307E\u3059\uFF09",
-        check: (ctx) => ctx.exists(".gitignore")
+        check: (ctx) => ctx.exists(".gitignore"),
+        fix: (ctx) => create(ctx.cwd, ".gitignore", "node_modules/\ndist/\n.env\n*.log\n")
       },
       {
         id: "env-example",
@@ -6321,7 +6367,12 @@ var init_checks = __esm({
         category: "\u30EA\u30DD\u30B8\u30C8\u30EA\u8A2D\u5B9A",
         severity: "warn",
         hint: ".env.example \u3092\u4F5C\u6210\u3057\u3001\u5FC5\u8981\u306A\u74B0\u5883\u5909\u6570\u306E\u4E00\u89A7\u3092\u5171\u6709\u3057\u3066\u304F\u3060\u3055\u3044",
-        check: (ctx) => ctx.existsAny([".env.example", ".env.sample"])
+        check: (ctx) => ctx.existsAny([".env.example", ".env.sample"]),
+        fix: (ctx) => create(
+          ctx.cwd,
+          ".env.example",
+          "# \u5FC5\u8981\u306A\u74B0\u5883\u5909\u6570\u306E\u30AD\u30FC\u3068\u8AAC\u660E\u306E\u307F\u3092\u8A18\u8F09\u3057\u3066\u304F\u3060\u3055\u3044\uFF08\u5024\u306F\u66F8\u304B\u306A\u3044\uFF09\n# \u4F8B:\n# DATABASE_URL=\n"
+        )
       },
       {
         id: "package-manifest",
@@ -6391,10 +6442,10 @@ var init_checks = __esm({
 
 // src/doctor/rc.ts
 function readRc(cwd) {
-  const file2 = import_path7.default.join(cwd, RC_FILE);
-  if (!import_fs7.default.existsSync(file2)) return {};
+  const file2 = import_path8.default.join(cwd, RC_FILE);
+  if (!import_fs8.default.existsSync(file2)) return {};
   try {
-    return JSON.parse(import_fs7.default.readFileSync(file2, "utf8"));
+    return JSON.parse(import_fs8.default.readFileSync(file2, "utf8"));
   } catch (err) {
     throw new Error(`${RC_FILE} \u306E JSON \u304C\u4E0D\u6B63\u3067\u3059: ${err.message}`);
   }
@@ -6404,19 +6455,19 @@ function applyRc(checks2, rc) {
   const severity = rc.doctor?.severity ?? {};
   return checks2.filter((c) => !disabled.has(c.id)).map((c) => severity[c.id] ? { ...c, severity: severity[c.id] } : c);
 }
-var import_fs7, import_path7, RC_FILE;
+var import_fs8, import_path8, RC_FILE;
 var init_rc = __esm({
   "src/doctor/rc.ts"() {
     "use strict";
-    import_fs7 = __toESM(require("fs"));
-    import_path7 = __toESM(require("path"));
+    import_fs8 = __toESM(require("fs"));
+    import_path8 = __toESM(require("path"));
     RC_FILE = ".foundruurc";
   }
 });
 
 // src/doctor/runner.ts
 function createContext(cwd) {
-  const exists = (rel) => import_fs8.default.existsSync(import_path8.default.join(cwd, rel));
+  const exists = (rel) => import_fs9.default.existsSync(import_path9.default.join(cwd, rel));
   return {
     cwd,
     exists,
@@ -6442,12 +6493,27 @@ function runDoctor(cwd, checkList = checks) {
   const failed = results.filter((r) => r.status === "fail").length;
   return { results, passed, warned, failed, ok: failed === 0 };
 }
-var import_fs8, import_path8;
+function runDoctorFix(cwd, checkList = checks) {
+  const ctx = createContext(cwd);
+  const effective = applyRc(checkList, readRc(cwd));
+  const fixed = [];
+  const unfixable = [];
+  for (const c of effective) {
+    if (c.check(ctx)) continue;
+    if (c.fix) {
+      fixed.push({ label: c.label, message: c.fix(ctx) });
+    } else {
+      unfixable.push({ label: c.label, hint: c.hint });
+    }
+  }
+  return { fixed, unfixable };
+}
+var import_fs9, import_path9;
 var init_runner = __esm({
   "src/doctor/runner.ts"() {
     "use strict";
-    import_fs8 = __toESM(require("fs"));
-    import_path8 = __toESM(require("path"));
+    import_fs9 = __toESM(require("fs"));
+    import_path9 = __toESM(require("path"));
     init_checks();
     init_rc();
   }
@@ -6475,31 +6541,31 @@ function collectDiff(cwd, since) {
 function scanDocs(cwd) {
   const candidates = [];
   for (const dir of ["docs", "doc", "."]) {
-    const abs = import_path9.default.join(cwd, dir);
-    if (!import_fs9.default.existsSync(abs)) continue;
-    for (const entry of import_fs9.default.readdirSync(abs, { withFileTypes: true })) {
+    const abs = import_path10.default.join(cwd, dir);
+    if (!import_fs10.default.existsSync(abs)) continue;
+    for (const entry of import_fs10.default.readdirSync(abs, { withFileTypes: true })) {
       if (entry.isFile() && /\.(md|txt)$/i.test(entry.name)) {
-        candidates.push(import_path9.default.join(dir === "." ? "" : dir, entry.name));
+        candidates.push(import_path10.default.join(dir === "." ? "" : dir, entry.name));
       }
     }
   }
-  const sessionsDir = import_path9.default.join(cwd, ".ai", "sessions");
-  if (import_fs9.default.existsSync(sessionsDir)) {
-    const sessions = import_fs9.default.readdirSync(sessionsDir, { withFileTypes: true }).filter((e) => e.isDirectory()).map((e) => ({ name: e.name, mtime: import_fs9.default.statSync(import_path9.default.join(sessionsDir, e.name)).mtimeMs })).sort((a, b) => b.mtime - a.mtime);
+  const sessionsDir = import_path10.default.join(cwd, ".ai", "sessions");
+  if (import_fs10.default.existsSync(sessionsDir)) {
+    const sessions = import_fs10.default.readdirSync(sessionsDir, { withFileTypes: true }).filter((e) => e.isDirectory()).map((e) => ({ name: e.name, mtime: import_fs10.default.statSync(import_path10.default.join(sessionsDir, e.name)).mtimeMs })).sort((a, b) => b.mtime - a.mtime);
     if (sessions.length > 0) {
-      const latest = import_path9.default.join(".ai", "sessions", sessions[0].name);
-      for (const f of import_fs9.default.readdirSync(import_path9.default.join(cwd, latest))) {
-        if (/\.md$/i.test(f)) candidates.push(import_path9.default.join(latest, f));
+      const latest = import_path10.default.join(".ai", "sessions", sessions[0].name);
+      for (const f of import_fs10.default.readdirSync(import_path10.default.join(cwd, latest))) {
+        if (/\.md$/i.test(f)) candidates.push(import_path10.default.join(latest, f));
       }
     }
   }
   const found = /* @__PURE__ */ new Map();
   for (const relPath of candidates) {
     const category = CATEGORY_PATTERNS.find(
-      (p) => p.pattern.test(import_path9.default.basename(relPath))
+      (p) => p.pattern.test(import_path10.default.basename(relPath))
     )?.category;
     if (!category || found.has(category)) continue;
-    const content = import_fs9.default.readFileSync(import_path9.default.join(cwd, relPath), "utf8");
+    const content = import_fs10.default.readFileSync(import_path10.default.join(cwd, relPath), "utf8");
     if (content.trim().length > 0) found.set(category, { path: relPath, content });
   }
   return found;
@@ -6537,13 +6603,13 @@ function runDeepDoctor(cwd, since) {
   const overall = Math.round(scores.reduce((sum, s) => sum + s.score, 0) / scores.length);
   return { since, diff, scores, overall };
 }
-var import_child_process, import_fs9, import_path9, CATEGORY_LABELS, CATEGORY_PATTERNS, deepRules;
+var import_child_process, import_fs10, import_path10, CATEGORY_LABELS, CATEGORY_PATTERNS, deepRules;
 var init_deep = __esm({
   "src/doctor/deep.ts"() {
     "use strict";
     import_child_process = require("child_process");
-    import_fs9 = __toESM(require("fs"));
-    import_path9 = __toESM(require("path"));
+    import_fs10 = __toESM(require("fs"));
+    import_path10 = __toESM(require("path"));
     CATEGORY_LABELS = {
       requirements: "\u8981\u4EF6\u54C1\u8CEA",
       design: "\u8A2D\u8A08\u54C1\u8CEA",
@@ -6701,7 +6767,7 @@ var init_deep = __esm({
 
 // src/core/fetcher.ts
 function cacheDir() {
-  return import_path11.default.join(import_os.default.homedir(), ".foundruu", "cache", "foundruu");
+  return import_path12.default.join(import_os.default.homedir(), ".foundruu", "cache", "foundruu");
 }
 function fetchWorkflowAssets(options = {}) {
   if (options.local) {
@@ -6709,7 +6775,7 @@ function fetchWorkflowAssets(options = {}) {
   }
   const cache = cacheDir();
   try {
-    if (import_fs11.default.existsSync(import_path11.default.join(cache, ".git"))) {
+    if (import_fs12.default.existsSync(import_path12.default.join(cache, ".git"))) {
       (0, import_child_process2.execFileSync)("git", ["-C", cache, "fetch", "--depth", "1", "origin", "main"], {
         stdio: "pipe",
         timeout: 3e4
@@ -6719,15 +6785,15 @@ function fetchWorkflowAssets(options = {}) {
         timeout: 3e4
       });
     } else {
-      import_fs11.default.rmSync(cache, { recursive: true, force: true });
-      import_fs11.default.mkdirSync(import_path11.default.dirname(cache), { recursive: true });
+      import_fs12.default.rmSync(cache, { recursive: true, force: true });
+      import_fs12.default.mkdirSync(import_path12.default.dirname(cache), { recursive: true });
       (0, import_child_process2.execFileSync)("git", ["clone", "--depth", "1", ASSETS_REPO, cache], {
         stdio: "pipe",
         timeout: 6e4
       });
     }
-    const remoteWorkflow = import_path11.default.join(cache, "assets", "workflow");
-    if (import_fs11.default.existsSync(remoteWorkflow)) {
+    const remoteWorkflow = import_path12.default.join(cache, "assets", "workflow");
+    if (import_fs12.default.existsSync(remoteWorkflow)) {
       return { root: remoteWorkflow, source: "remote" };
     }
     log.warn("\u30EA\u30E2\u30FC\u30C8\u30EA\u30DD\u30B8\u30C8\u30EA\u306B assets/workflow \u304C\u898B\u3064\u304B\u308A\u307E\u305B\u3093\u3002\u540C\u68B1\u30A2\u30BB\u30C3\u30C8\u3092\u4F7F\u7528\u3057\u307E\u3059\u3002");
@@ -6738,14 +6804,14 @@ function fetchWorkflowAssets(options = {}) {
   }
   return { root: workflowRoot(), source: "bundled" };
 }
-var import_child_process2, import_fs11, import_os, import_path11, ASSETS_REPO;
+var import_child_process2, import_fs12, import_os, import_path12, ASSETS_REPO;
 var init_fetcher = __esm({
   "src/core/fetcher.ts"() {
     "use strict";
     import_child_process2 = require("child_process");
-    import_fs11 = __toESM(require("fs"));
+    import_fs12 = __toESM(require("fs"));
     import_os = __toESM(require("os"));
-    import_path11 = __toESM(require("path"));
+    import_path12 = __toESM(require("path"));
     init_assets();
     init_logger();
     ASSETS_REPO = "https://github.com/Ruu5LP/foundruu.git";
@@ -6824,13 +6890,13 @@ var init_update = __esm({
 function findAiRoot(cwd) {
   try {
     const top = (0, import_child_process3.execFileSync)("git", ["-C", cwd, "rev-parse", "--show-toplevel"], { stdio: "pipe" }).toString().trim();
-    if (import_fs12.default.existsSync(import_path12.default.join(top, ".ai"))) return top;
+    if (import_fs13.default.existsSync(import_path13.default.join(top, ".ai"))) return top;
   } catch {
   }
-  let dir = import_path12.default.resolve(cwd);
+  let dir = import_path13.default.resolve(cwd);
   for (; ; ) {
-    if (import_fs12.default.existsSync(import_path12.default.join(dir, ".ai"))) return dir;
-    const parent = import_path12.default.dirname(dir);
+    if (import_fs13.default.existsSync(import_path13.default.join(dir, ".ai"))) return dir;
+    const parent = import_path13.default.dirname(dir);
     if (parent === dir) return null;
     dir = parent;
   }
@@ -6849,18 +6915,18 @@ function startSession(cwd, name) {
     throw new Error(`\u30BB\u30C3\u30B7\u30E7\u30F3\u540D\u304C\u4E0D\u6B63\u3067\u3059(\u82F1\u6570\u5B57\u3067\u59CB\u307E\u308A / \u3084\u7A7A\u767D\u3092\u542B\u307E\u306A\u3044\u3053\u3068): ${name}`);
   }
   const root = requireAiRoot(cwd);
-  const templateDir = import_path12.default.join(root, ".ai", "templates", "session");
-  if (!import_fs12.default.existsSync(templateDir)) {
-    throw new Error(`\u30BB\u30C3\u30B7\u30E7\u30F3\u30C6\u30F3\u30D7\u30EC\u30FC\u30C8\u304C\u898B\u3064\u304B\u308A\u307E\u305B\u3093: ${import_path12.default.relative(cwd, templateDir)}`);
+  const templateDir = import_path13.default.join(root, ".ai", "templates", "session");
+  if (!import_fs13.default.existsSync(templateDir)) {
+    throw new Error(`\u30BB\u30C3\u30B7\u30E7\u30F3\u30C6\u30F3\u30D7\u30EC\u30FC\u30C8\u304C\u898B\u3064\u304B\u308A\u307E\u305B\u3093: ${import_path13.default.relative(cwd, templateDir)}`);
   }
-  const dest = import_path12.default.join(root, ".ai", "sessions", name);
-  if (import_fs12.default.existsSync(dest)) {
+  const dest = import_path13.default.join(root, ".ai", "sessions", name);
+  if (import_fs13.default.existsSync(dest)) {
     throw new Error(`\u30BB\u30C3\u30B7\u30E7\u30F3\u306F\u65E2\u306B\u5B58\u5728\u3057\u307E\u3059: .ai/sessions/${name}`);
   }
-  import_fs12.default.mkdirSync(dest, { recursive: true });
-  const files = import_fs12.default.readdirSync(templateDir).filter((f) => f.endsWith(".md"));
+  import_fs13.default.mkdirSync(dest, { recursive: true });
+  const files = import_fs13.default.readdirSync(templateDir).filter((f) => f.endsWith(".md"));
   for (const file2 of files) {
-    import_fs12.default.copyFileSync(import_path12.default.join(templateDir, file2), import_path12.default.join(dest, file2));
+    import_fs13.default.copyFileSync(import_path13.default.join(templateDir, file2), import_path13.default.join(dest, file2));
   }
   log.success(`\u30BB\u30C3\u30B7\u30E7\u30F3\u3092\u4F5C\u6210\u3057\u307E\u3057\u305F: .ai/sessions/${name}`);
   log.info("");
@@ -6876,9 +6942,9 @@ function startSession(cwd, name) {
 }
 function sessionNames(cwd) {
   const root = requireAiRoot(cwd);
-  const sessionsDir = import_path12.default.join(root, ".ai", "sessions");
-  if (!import_fs12.default.existsSync(sessionsDir)) return [];
-  return import_fs12.default.readdirSync(sessionsDir, { withFileTypes: true }).filter((e) => e.isDirectory()).map((e) => e.name).sort();
+  const sessionsDir = import_path13.default.join(root, ".ai", "sessions");
+  if (!import_fs13.default.existsSync(sessionsDir)) return [];
+  return import_fs13.default.readdirSync(sessionsDir, { withFileTypes: true }).filter((e) => e.isDirectory()).map((e) => e.name).sort();
 }
 function listSessions(cwd) {
   const sessions = sessionNames(cwd);
@@ -6892,13 +6958,13 @@ function listSessions(cwd) {
     log.info(`  - ${name}`);
   }
 }
-var import_child_process3, import_fs12, import_path12;
+var import_child_process3, import_fs13, import_path13;
 var init_session = __esm({
   "src/commands/session.ts"() {
     "use strict";
     import_child_process3 = require("child_process");
-    import_fs12 = __toESM(require("fs"));
-    import_path12 = __toESM(require("path"));
+    import_fs13 = __toESM(require("fs"));
+    import_path13 = __toESM(require("path"));
     init_logger();
   }
 });
@@ -7308,8 +7374,8 @@ var init_parseUtil = __esm({
     init_errors();
     init_en();
     makeIssue = (params) => {
-      const { data, path: path18, errorMaps, issueData } = params;
-      const fullPath = [...path18, ...issueData.path || []];
+      const { data, path: path19, errorMaps, issueData } = params;
+      const fullPath = [...path19, ...issueData.path || []];
       const fullIssue = {
         ...issueData,
         path: fullPath
@@ -7589,11 +7655,11 @@ var init_types = __esm({
     init_parseUtil();
     init_util();
     ParseInputLazyPath = class {
-      constructor(parent, value, path18, key) {
+      constructor(parent, value, path19, key) {
         this._cachedPath = [];
         this.parent = parent;
         this.data = value;
-        this._path = path18;
+        this._path = path19;
         this._key = key;
       }
       get path() {
@@ -11092,10 +11158,10 @@ function mergeDefs(...defs) {
 function cloneDef(schema) {
   return mergeDefs(schema._zod.def);
 }
-function getElementAtPath(obj, path18) {
-  if (!path18)
+function getElementAtPath(obj, path19) {
+  if (!path19)
     return obj;
-  return path18.reduce((acc, key) => acc?.[key], obj);
+  return path19.reduce((acc, key) => acc?.[key], obj);
 }
 function promiseAllObject(promisesObj) {
   const keys = Object.keys(promisesObj);
@@ -11423,11 +11489,11 @@ function explicitlyAborted(x, startIndex = 0) {
   }
   return false;
 }
-function prefixIssues(path18, issues) {
+function prefixIssues(path19, issues) {
   return issues.map((iss) => {
     var _a3;
     (_a3 = iss).path ?? (_a3.path = []);
-    iss.path.unshift(path18);
+    iss.path.unshift(path19);
     return iss;
   });
 }
@@ -11644,16 +11710,16 @@ function flattenError(error51, mapper = (issue2) => issue2.message) {
 }
 function formatError(error51, mapper = (issue2) => issue2.message) {
   const fieldErrors = { _errors: [] };
-  const processError = (error52, path18 = []) => {
+  const processError = (error52, path19 = []) => {
     for (const issue2 of error52.issues) {
       if (issue2.code === "invalid_union" && issue2.errors.length) {
-        issue2.errors.map((issues) => processError({ issues }, [...path18, ...issue2.path]));
+        issue2.errors.map((issues) => processError({ issues }, [...path19, ...issue2.path]));
       } else if (issue2.code === "invalid_key") {
-        processError({ issues: issue2.issues }, [...path18, ...issue2.path]);
+        processError({ issues: issue2.issues }, [...path19, ...issue2.path]);
       } else if (issue2.code === "invalid_element") {
-        processError({ issues: issue2.issues }, [...path18, ...issue2.path]);
+        processError({ issues: issue2.issues }, [...path19, ...issue2.path]);
       } else {
-        const fullpath = [...path18, ...issue2.path];
+        const fullpath = [...path19, ...issue2.path];
         if (fullpath.length === 0) {
           fieldErrors._errors.push(mapper(issue2));
         } else {
@@ -11680,17 +11746,17 @@ function formatError(error51, mapper = (issue2) => issue2.message) {
 }
 function treeifyError(error51, mapper = (issue2) => issue2.message) {
   const result = { errors: [] };
-  const processError = (error52, path18 = []) => {
+  const processError = (error52, path19 = []) => {
     var _a3, _b;
     for (const issue2 of error52.issues) {
       if (issue2.code === "invalid_union" && issue2.errors.length) {
-        issue2.errors.map((issues) => processError({ issues }, [...path18, ...issue2.path]));
+        issue2.errors.map((issues) => processError({ issues }, [...path19, ...issue2.path]));
       } else if (issue2.code === "invalid_key") {
-        processError({ issues: issue2.issues }, [...path18, ...issue2.path]);
+        processError({ issues: issue2.issues }, [...path19, ...issue2.path]);
       } else if (issue2.code === "invalid_element") {
-        processError({ issues: issue2.issues }, [...path18, ...issue2.path]);
+        processError({ issues: issue2.issues }, [...path19, ...issue2.path]);
       } else {
-        const fullpath = [...path18, ...issue2.path];
+        const fullpath = [...path19, ...issue2.path];
         if (fullpath.length === 0) {
           result.errors.push(mapper(issue2));
           continue;
@@ -11722,8 +11788,8 @@ function treeifyError(error51, mapper = (issue2) => issue2.message) {
 }
 function toDotPath(_path) {
   const segs = [];
-  const path18 = _path.map((seg) => typeof seg === "object" ? seg.key : seg);
-  for (const seg of path18) {
+  const path19 = _path.map((seg) => typeof seg === "object" ? seg.key : seg);
+  for (const seg of path19) {
     if (typeof seg === "number")
       segs.push(`[${seg}]`);
     else if (typeof seg === "symbol")
@@ -25403,13 +25469,13 @@ function resolveRef(ref, ctx) {
   if (!ref.startsWith("#")) {
     throw new Error("External $ref is not supported, only local refs (#/...) are allowed");
   }
-  const path18 = ref.slice(1).split("/").filter(Boolean);
-  if (path18.length === 0) {
+  const path19 = ref.slice(1).split("/").filter(Boolean);
+  if (path19.length === 0) {
     return ctx.rootSchema;
   }
   const defsKey = ctx.version === "draft-2020-12" ? "$defs" : "definitions";
-  if (path18[0] === defsKey) {
-    const key = path18[1];
+  if (path19[0] === defsKey) {
+    const key = path19[1];
     if (!key || !ctx.defs[key]) {
       throw new Error(`Reference not found: ${ref}`);
     }
@@ -33508,8 +33574,8 @@ var require_utils2 = __commonJS({
       }
       return ind;
     }
-    function removeDotSegments(path18) {
-      let input = path18;
+    function removeDotSegments(path19) {
+      let input = path19;
       const output = [];
       let nextSlash = -1;
       let len = 0;
@@ -33761,8 +33827,8 @@ var require_schemes = __commonJS({
         wsComponent.secure = void 0;
       }
       if (wsComponent.resourceName) {
-        const [path18, query] = wsComponent.resourceName.split("?");
-        wsComponent.path = path18 && path18 !== "/" ? path18 : void 0;
+        const [path19, query] = wsComponent.resourceName.split("?");
+        wsComponent.path = path19 && path19 !== "/" ? path19 : void 0;
         wsComponent.query = query;
         wsComponent.resourceName = void 0;
       }
@@ -37155,12 +37221,12 @@ var require_dist = __commonJS({
         throw new Error(`Unknown format "${name}"`);
       return f;
     };
-    function addFormats(ajv, list, fs17, exportName) {
+    function addFormats(ajv, list, fs18, exportName) {
       var _a3;
       var _b;
       (_a3 = (_b = ajv.opts.code).formats) !== null && _a3 !== void 0 ? _a3 : _b.formats = (0, codegen_1._)`require("ajv-formats/dist/formats").${exportName}`;
       for (const f of list)
-        ajv.addFormat(f, fs17[f]);
+        ajv.addFormat(f, fs18[f]);
     }
     module2.exports = exports2 = formatsPlugin;
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -38979,11 +39045,11 @@ async function runMcpServer(cwd) {
   await server.connect(transport);
   log.info(`foundruu MCP server v${cliVersion()} started (stdio)`);
 }
-var import_path14, resolveDir, text;
+var import_path15, resolveDir, text;
 var init_mcp2 = __esm({
   "src/commands/mcp.ts"() {
     "use strict";
-    import_path14 = __toESM(require("path"));
+    import_path15 = __toESM(require("path"));
     init_mcp();
     init_stdio2();
     init_zod();
@@ -38994,7 +39060,7 @@ var init_mcp2 = __esm({
     init_workflow();
     init_session();
     init_update();
-    resolveDir = (base, dir) => dir ? import_path14.default.resolve(base, dir) : base;
+    resolveDir = (base, dir) => dir ? import_path15.default.resolve(base, dir) : base;
     text = (value) => ({
       content: [
         {
@@ -39025,14 +39091,14 @@ function resolveToken() {
   }
 }
 function latestReport(dir) {
-  if (!import_fs14.default.existsSync(dir)) return null;
-  const files = import_fs14.default.readdirSync(dir).filter((f) => /^foundruu-deep-report-.*\.json$/.test(f)).sort();
+  if (!import_fs15.default.existsSync(dir)) return null;
+  const files = import_fs15.default.readdirSync(dir).filter((f) => /^foundruu-deep-report-.*\.json$/.test(f)).sort();
   if (files.length === 0) return null;
   const name = files[files.length - 1];
-  return { file: import_path15.default.join(dir, name), name };
+  return { file: import_path16.default.join(dir, name), name };
 }
 async function runCloudPush(cwd, options) {
-  const dir = import_path15.default.resolve(cwd, options.dir ?? "reports");
+  const dir = import_path16.default.resolve(cwd, options.dir ?? "reports");
   const report = latestReport(dir);
   if (!report) {
     throw new Error(
@@ -39041,13 +39107,13 @@ async function runCloudPush(cwd, options) {
   }
   const config2 = readConfig(cwd);
   const repo = options.repo ?? config2?.cloud?.repo ?? DEFAULT_CLOUD_REPO;
-  const project = (options.project ?? config2?.projectName ?? import_path15.default.basename(cwd)).replace(
+  const project = (options.project ?? config2?.projectName ?? import_path16.default.basename(cwd)).replace(
     /[^\w.-]/g,
     "-"
   );
   const destPath = `reports/${project}/${report.name}`;
   const token = resolveToken();
-  const content = import_fs14.default.readFileSync(report.file);
+  const content = import_fs15.default.readFileSync(report.file);
   const res = await fetch(`https://api.github.com/repos/${repo}/contents/${destPath}`, {
     method: "PUT",
     headers: {
@@ -39073,13 +39139,13 @@ async function runCloudPush(cwd, options) {
     `\u30C0\u30C3\u30B7\u30E5\u30DC\u30FC\u30C9: https://${repo.split("/")[0].toLowerCase()}.github.io/${repo.split("/")[1]}/`
   );
 }
-var import_child_process4, import_fs14, import_path15, DEFAULT_CLOUD_REPO;
+var import_child_process4, import_fs15, import_path16, DEFAULT_CLOUD_REPO;
 var init_cloud = __esm({
   "src/commands/cloud.ts"() {
     "use strict";
     import_child_process4 = require("child_process");
-    import_fs14 = __toESM(require("fs"));
-    import_path15 = __toESM(require("path"));
+    import_fs15 = __toESM(require("fs"));
+    import_path16 = __toESM(require("path"));
     init_config();
     init_logger();
     DEFAULT_CLOUD_REPO = "Ruu5LP/foundruu-cloud";
@@ -39094,10 +39160,10 @@ __export(dashboard_exports, {
   runDashboard: () => runDashboard
 });
 function loadHistory(dir) {
-  if (!import_fs15.default.existsSync(dir)) return [];
-  return import_fs15.default.readdirSync(dir).filter((f) => /^foundruu-deep-report-.*\.json$/.test(f)).sort().map((f) => ({
+  if (!import_fs16.default.existsSync(dir)) return [];
+  return import_fs16.default.readdirSync(dir).filter((f) => /^foundruu-deep-report-.*\.json$/.test(f)).sort().map((f) => ({
     timestamp: f.replace(/^foundruu-deep-report-/, "").replace(/\.json$/, ""),
-    report: JSON.parse(import_fs15.default.readFileSync(import_path16.default.join(dir, f), "utf8"))
+    report: JSON.parse(import_fs16.default.readFileSync(import_path17.default.join(dir, f), "utf8"))
   }));
 }
 function trendSvg(history) {
@@ -39159,25 +39225,25 @@ ${trendSvg(history)}
 `;
 }
 function runDashboard(cwd, options) {
-  const dir = import_path16.default.resolve(cwd, options.dir ?? "reports");
+  const dir = import_path17.default.resolve(cwd, options.dir ?? "reports");
   const history = loadHistory(dir);
   if (history.length === 0) {
     log.warn(
-      `${import_path16.default.relative(cwd, dir) || "."} \u306B deep \u30EC\u30DD\u30FC\u30C8\u304C\u3042\u308A\u307E\u305B\u3093\u3002\u307E\u305A foundruu doctor --deep --report ${options.dir ?? "reports"} \u3092\u5B9F\u884C\u3057\u3066\u304F\u3060\u3055\u3044\u3002`
+      `${import_path17.default.relative(cwd, dir) || "."} \u306B deep \u30EC\u30DD\u30FC\u30C8\u304C\u3042\u308A\u307E\u305B\u3093\u3002\u307E\u305A foundruu doctor --deep --report ${options.dir ?? "reports"} \u3092\u5B9F\u884C\u3057\u3066\u304F\u3060\u3055\u3044\u3002`
     );
     process.exitCode = 1;
     return;
   }
-  const out2 = import_path16.default.resolve(cwd, options.out ?? import_path16.default.join(dir, "index.html"));
-  import_fs15.default.writeFileSync(out2, renderDashboard(history));
+  const out2 = import_path17.default.resolve(cwd, options.out ?? import_path17.default.join(dir, "index.html"));
+  import_fs16.default.writeFileSync(out2, renderDashboard(history));
   log.success(`\u30C0\u30C3\u30B7\u30E5\u30DC\u30FC\u30C9\u3092\u751F\u6210\u3057\u307E\u3057\u305F: ${out2}(\u30EC\u30DD\u30FC\u30C8${history.length}\u4EF6)`);
 }
-var import_fs15, import_path16;
+var import_fs16, import_path17;
 var init_dashboard = __esm({
   "src/commands/dashboard.ts"() {
     "use strict";
-    import_fs15 = __toESM(require("fs"));
-    import_path16 = __toESM(require("path"));
+    import_fs16 = __toESM(require("fs"));
+    import_path17 = __toESM(require("path"));
     init_logger();
   }
 });
@@ -42293,9 +42359,9 @@ Expecting one of '${allowedValues.join("', '")}'`);
    * @param {string} [path]
    * @return {(string|null|Command)}
    */
-  executableDir(path18) {
-    if (path18 === void 0) return this._executableDir;
-    this._executableDir = path18;
+  executableDir(path19) {
+    if (path19 === void 0) return this._executableDir;
+    this._executableDir = path19;
     return this;
   }
   /**
@@ -42743,12 +42809,12 @@ init_runner();
 init_deep();
 
 // src/doctor/report.ts
-var import_fs10 = __toESM(require("fs"));
-var import_path10 = __toESM(require("path"));
+var import_fs11 = __toESM(require("fs"));
+var import_path11 = __toESM(require("path"));
 function writeDeepReports(report, outDir) {
-  import_fs10.default.mkdirSync(outDir, { recursive: true });
+  import_fs11.default.mkdirSync(outDir, { recursive: true });
   const stamp = (/* @__PURE__ */ new Date()).toISOString().replace(/[:.]/g, "-");
-  const base = import_path10.default.join(outDir, `foundruu-deep-report-${stamp}`);
+  const base = import_path11.default.join(outDir, `foundruu-deep-report-${stamp}`);
   const files = [
     writeFile(`${base}.json`, JSON.stringify(report, null, 2) + "\n"),
     writeFile(`${base}.md`, renderMarkdown(report)),
@@ -42757,7 +42823,7 @@ function writeDeepReports(report, outDir) {
   return files;
 }
 function writeFile(file2, content) {
-  import_fs10.default.writeFileSync(file2, content);
+  import_fs11.default.writeFileSync(file2, content);
   return file2;
 }
 function renderMarkdown(report) {
@@ -42862,6 +42928,18 @@ function runDoctorCommand(cwd, options) {
     runDeep(cwd, options);
     return;
   }
+  if (options.fix) {
+    const { fixed, unfixable } = runDoctorFix(cwd);
+    if (fixed.length === 0) {
+      log.info("\u81EA\u52D5\u4FEE\u5FA9\u3067\u304D\u308B\u9805\u76EE\u306F\u3042\u308A\u307E\u305B\u3093\u3067\u3057\u305F\u3002");
+    } else {
+      for (const f of fixed) log.success(f.message);
+    }
+    for (const u of unfixable) {
+      log.warn(`\u624B\u52D5\u5BFE\u5FDC\u304C\u5FC5\u8981: ${u.label} \u2192 ${u.hint}`);
+    }
+    log.info("");
+  }
   const report = runDoctor(cwd);
   if (options.json) {
     console.log(JSON.stringify(report, null, 2));
@@ -42895,21 +42973,21 @@ init_config();
 init_logger();
 
 // src/core/plugins.ts
-var import_fs13 = __toESM(require("fs"));
-var import_path13 = __toESM(require("path"));
+var import_fs14 = __toESM(require("fs"));
+var import_path14 = __toESM(require("path"));
 init_config();
 init_logger();
 var PLUGIN_PREFIX = "foundruu-plugin-";
 function discoverNodeModules(cwd) {
-  const nm = import_path13.default.join(cwd, "node_modules");
-  if (!import_fs13.default.existsSync(nm)) return [];
+  const nm = import_path14.default.join(cwd, "node_modules");
+  if (!import_fs14.default.existsSync(nm)) return [];
   const found = [];
-  for (const entry of import_fs13.default.readdirSync(nm, { withFileTypes: true })) {
+  for (const entry of import_fs14.default.readdirSync(nm, { withFileTypes: true })) {
     if (entry.name.startsWith(PLUGIN_PREFIX)) {
-      found.push(import_path13.default.join(nm, entry.name));
+      found.push(import_path14.default.join(nm, entry.name));
     } else if (entry.name.startsWith("@") && entry.isDirectory()) {
-      for (const scoped of import_fs13.default.readdirSync(import_path13.default.join(nm, entry.name))) {
-        if (scoped.startsWith(PLUGIN_PREFIX)) found.push(import_path13.default.join(nm, entry.name, scoped));
+      for (const scoped of import_fs14.default.readdirSync(import_path14.default.join(nm, entry.name))) {
+        if (scoped.startsWith(PLUGIN_PREFIX)) found.push(import_path14.default.join(nm, entry.name, scoped));
       }
     }
   }
@@ -42918,7 +42996,7 @@ function discoverNodeModules(cwd) {
 function configuredPlugins(cwd) {
   const config2 = readConfig(cwd);
   return (config2?.plugins ?? []).map(
-    (p) => p.startsWith(".") || p.startsWith("/") ? import_path13.default.resolve(cwd, p) : import_path13.default.join(cwd, "node_modules", p)
+    (p) => p.startsWith(".") || p.startsWith("/") ? import_path14.default.resolve(cwd, p) : import_path14.default.join(cwd, "node_modules", p)
   );
 }
 function loadPlugins(cwd, ctx) {
@@ -42966,9 +43044,11 @@ var workflow = program2.command("workflow").description("Workflow / Prompt / Rul
 workflow.command("install").description("Workflow / Prompt / Rules\uFF08.ai/\uFF09\u306E\u307F\u3092\u65E2\u5B58\u30EA\u30DD\u30B8\u30C8\u30EA\u3078\u5C0E\u5165\u3059\u308B").action(() => {
   wrap(() => installWorkflow(process.cwd()));
 });
-program2.command("doctor").description("\u30EA\u30DD\u30B8\u30C8\u30EA\u304CAI\u958B\u767A\u53EF\u80FD\u306A\u72B6\u614B\u304B\u8A3A\u65AD\u3059\u308B\uFF08.foundruurc \u3067\u30AB\u30B9\u30BF\u30DE\u30A4\u30BA\u53EF\u80FD\uFF09").option("--json", "JSON\u5F62\u5F0F\u3067\u51FA\u529B\u3059\u308B").option("--deep", "docs/ \u3068 git \u5DEE\u5206\u304B\u3089 AI\u958B\u767A\u30D7\u30ED\u30BB\u30B9\u306E\u54C1\u8CEA\u3092\u30B9\u30B3\u30A2\u8A3A\u65AD\u3059\u308B").option("--since <ref>", "--deep \u306E\u5DEE\u5206\u6BD4\u8F03\u57FA\u6E96", "main").option("--report <dir>", "--deep \u306E\u30EC\u30DD\u30FC\u30C8(md/html/json)\u3092\u66F8\u304D\u51FA\u3059\u30C7\u30A3\u30EC\u30AF\u30C8\u30EA").action(async (opts) => {
-  await wrap(() => runDoctorCommand(process.cwd(), opts));
-});
+program2.command("doctor").description("\u30EA\u30DD\u30B8\u30C8\u30EA\u304CAI\u958B\u767A\u53EF\u80FD\u306A\u72B6\u614B\u304B\u8A3A\u65AD\u3059\u308B\uFF08.foundruurc \u3067\u30AB\u30B9\u30BF\u30DE\u30A4\u30BA\u53EF\u80FD\uFF09").option("--json", "JSON\u5F62\u5F0F\u3067\u51FA\u529B\u3059\u308B").option("--fix", "\u4FEE\u5FA9\u53EF\u80FD\u306A\u9805\u76EE(README / LICENSE / .gitignore / .env.example)\u3092\u81EA\u52D5\u751F\u6210\u3059\u308B").option("--deep", "docs/ \u3068 git \u5DEE\u5206\u304B\u3089 AI\u958B\u767A\u30D7\u30ED\u30BB\u30B9\u306E\u54C1\u8CEA\u3092\u30B9\u30B3\u30A2\u8A3A\u65AD\u3059\u308B").option("--since <ref>", "--deep \u306E\u5DEE\u5206\u6BD4\u8F03\u57FA\u6E96", "main").option("--report <dir>", "--deep \u306E\u30EC\u30DD\u30FC\u30C8(md/html/json)\u3092\u66F8\u304D\u51FA\u3059\u30C7\u30A3\u30EC\u30AF\u30C8\u30EA").action(
+  async (opts) => {
+    await wrap(() => runDoctorCommand(process.cwd(), opts));
+  }
+);
 program2.command("update").description(
   "Workflow / Prompt / Rules \u3092\u6700\u65B0\u3078\u66F4\u65B0\u3059\u308B\uFF08GitHub \u304B\u3089\u53D6\u5F97\u3001\u5931\u6557\u6642\u306F\u540C\u68B1\u30A2\u30BB\u30C3\u30C8\uFF09"
 ).option("-f, --force", "\u30E6\u30FC\u30B6\u30FC\u7DE8\u96C6\u6E08\u307F\u30D5\u30A1\u30A4\u30EB\u3082\u4E0A\u66F8\u304D\u3059\u308B").option("--diff", "\u5DEE\u5206\u306E\u8868\u793A\u306E\u307F\u3067\u66F8\u304D\u8FBC\u307E\u306A\u3044").option("--local", "GitHub \u304B\u3089\u53D6\u5F97\u305B\u305A CLI \u540C\u68B1\u30A2\u30BB\u30C3\u30C8\u3092\u4F7F\u3046").option(

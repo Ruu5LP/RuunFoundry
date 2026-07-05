@@ -64,12 +64,21 @@ program
   .command("doctor")
   .description("リポジトリがAI開発可能な状態か診断する（.foundruurc でカスタマイズ可能）")
   .option("--json", "JSON形式で出力する")
+  .option("--fix", "修復可能な項目(README / LICENSE / .gitignore / .env.example)を自動生成する")
   .option("--deep", "docs/ と git 差分から AI開発プロセスの品質をスコア診断する")
   .option("--since <ref>", "--deep の差分比較基準", "main")
   .option("--report <dir>", "--deep のレポート(md/html/json)を書き出すディレクトリ")
-  .action(async (opts: { json?: boolean; deep?: boolean; since?: string; report?: string }) => {
-    await wrap(() => runDoctorCommand(process.cwd(), opts));
-  });
+  .action(
+    async (opts: {
+      json?: boolean;
+      fix?: boolean;
+      deep?: boolean;
+      since?: string;
+      report?: string;
+    }) => {
+      await wrap(() => runDoctorCommand(process.cwd(), opts));
+    }
+  );
 
 program
   .command("update")
