@@ -6,6 +6,8 @@
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-07-05
+
 ### Added
 
 - コマンド層(`dashboard` / `workflow` / `update` / `cloud` / `init` / `mcp`)のテストを追加。カバレッジ計測を導入し、回帰防止の下限しきい値を CI で強制（statements 約48% → 約79%）
@@ -79,7 +81,8 @@
 
 - 初回リリース。`init` / `workflow` / `doctor` / `session` / `templates` と npm 公開
 
-[Unreleased]: https://github.com/Ruu5LP/foundruu/compare/v0.7.1...HEAD
+[Unreleased]: https://github.com/Ruu5LP/foundruu/compare/v0.8.0...HEAD
+[0.8.0]: https://github.com/Ruu5LP/foundruu/compare/v0.7.1...v0.8.0
 [0.7.1]: https://github.com/Ruu5LP/foundruu/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/Ruu5LP/foundruu/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/Ruu5LP/foundruu/compare/v0.5.0...v0.6.0
