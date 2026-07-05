@@ -6,6 +6,8 @@
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-07-05
+
 ### Added
 
 - `foundruu doctor --fix` — README / LICENSE / .gitignore / .env.example の欠如を最小構成で自動生成する（既存ファイルは上書きしない）
@@ -86,7 +88,8 @@
 
 - 初回リリース。`init` / `workflow` / `doctor` / `session` / `templates` と npm 公開
 
-[Unreleased]: https://github.com/Ruu5LP/foundruu/compare/v0.8.0...HEAD
+[Unreleased]: https://github.com/Ruu5LP/foundruu/compare/v0.9.0...HEAD
+[0.9.0]: https://github.com/Ruu5LP/foundruu/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/Ruu5LP/foundruu/compare/v0.7.1...v0.8.0
 [0.7.1]: https://github.com/Ruu5LP/foundruu/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/Ruu5LP/foundruu/compare/v0.6.0...v0.7.0
