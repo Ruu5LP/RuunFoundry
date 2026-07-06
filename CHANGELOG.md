@@ -13,9 +13,17 @@
   - `main.py` / `tests/test_main.py`（FastAPI + `TestClient`）、`requirements.txt` / `requirements-dev.txt`、Python 向け `.gitignore`、`docs/SETUP.md` を生成
   - Docker（`python:3.14-slim` + uvicorn）と GitHub Actions（`ruff check` / `ruff format --check` / `mypy` / `pytest`）に対応。生成物が自身の厳格チェックを緑で通過することを確認
   - AI 向けチェックリスト（CLAUDE.md / CODEX.md）に Python 用コマンドを追加。コーディング規約の「自動チェックの範囲」に Python を追記
-- `workflow install`（`init` 経由含む）で、Prettier を使っているプロジェクトには `.prettierignore` に `.ai` を自動追記するようにした。管理対象の `.ai/` がローカル整形でハッシュ変化し、`foundruu update` にユーザー編集と誤検知されるのを防ぐ（`.prettierrc*` / `prettier.config.*` / `package.json` の `prettier` キーで使用を判定。未使用時は何も作らない）
+- `workflow install`（`init` 経由含む）で、Prettier を使っているプロジェクトには `.prettierignore` に `.ai` を自動追記するようにした。管理対象の `.ai/` がローカル整形でハッシュ変化し、`foundruu update` にユーザー編集と誤検知されるのを防ぐ（`.prettierrc*` / `prettier.config.*` / `package.json` の `prettier` キーで使用を判定。未使用時は何も作らない。`.ai/` が既に無視されていれば二重登録しない）
 
 ### Changed
+
+- コーディングルールの「機械強制」を全言語で CI まで一貫させ、規約とツールの食い違い・非対称を解消した
+  - **Laravel の CI 強化**: これまで `php artisan test` のみだった CI に `composer lint`（Pint）と `composer analyse`（PHPStan/Larastan level 8）を追加。規約が求める静的解析を CI で担保するようにした（TS/Python と同水準に）
+  - **Next.js / Nuxt の CI に `typecheck` を追加**: 標準 TypeScript ジョブのみで走っていた `tsc --noEmit` 相当を Next.js / Nuxt でも実行し、型エラーが CI をすり抜けないようにした。Nuxt は `@nuxt/eslint` を言語層で同梱するため `lint` を（`eslint` 機能の有無に関わらず）常に実行する
+  - **依存監査を CI に追加**: Node 系は `npm audit --audit-level=high`、Python は `pip-audit`、Laravel は `composer audit` を CI ステップ化。security.md の「脆弱性のある依存を放置しない」を機械で担保（Python の `requirements-dev.txt` に `pip-audit` を追加）
+  - **テストカバレッジ下限の強制**: vitest 機能の `vitest.config.ts` に `thresholds`（lines/functions/branches/statements 80%）を設定し、testing.md の「新規コード 80% 以上」を `test:coverage` で機械強制
+  - **コーディング規約の明確化**: TypeScript の ESLint 強制が「ESLint ツールチェーン導入前提」であること（標準テンプレートは既定同梱、無効化した場合は再導入が必要）を明記
+  - **prettier 機能テンプレートに `.ai/` を追加**: 管理ファイルが整形対象に入らないよう、テンプレート側でも明示的に無視
 
 - 配布するコーディングルールを大幅に強化。「言語標準リンター任せ」で緩かった規約を、全配布言語で同水準に引き上げた
   - **コーディング規約（`.ai/`）**: 「リンターが緑でも規約違反は不可」を明記。無理やり型を合わせるキャスト（`as any` / `as unknown as T` / `!` / `@ts-ignore`）の明示禁止、状態を極力持たない方針、意味ごとの命名プレフィクス表、ファイル肥大化・ディレクトリ構造の規律を追加
