@@ -203,7 +203,10 @@ export async function runInit(cwd: string, rawOptions: InitOptions): Promise<voi
   for (const layer of layers.filter((l) => fs.existsSync(l))) {
     for (const target of collectJsonPatchTargets(layer, layerDest(layer))) {
       if (!originals.has(target) && fs.existsSync(target)) {
-        originals.set(target, JSON.parse(fs.readFileSync(target, "utf8")) as Record<string, unknown>);
+        originals.set(
+          target,
+          JSON.parse(fs.readFileSync(target, "utf8")) as Record<string, unknown>
+        );
       }
     }
   }
