@@ -14,20 +14,9 @@ export interface TemplateContext {
   year: number;
 }
 
-/** JSON マージ時に既存値とテンプレート値が食い違った箇所（既存値を維持した上で報告する） */
-export interface MergeConflict {
-  /** マージ先ファイルの絶対パス */
-  file: string;
-  /** 衝突したキーのパス（例: "engines.node"） */
-  keyPath: string;
-  existing: unknown;
-  incoming: unknown;
-}
-
 export interface CopyResult {
   written: string[];
   skipped: string[];
-  conflicts: MergeConflict[];
 }
 
 function createHandlebars(ctx: TemplateContext): typeof Handlebars {
@@ -47,19 +36,16 @@ function createHandlebars(ctx: TemplateContext): typeof Handlebars {
 }
 
 /**
- * 既存(target)へパッチ(source)をディープマージする。
- * 既存プロジェクトへの後入れで設定を壊さないよう、値が食い違うキーは既存値を維持し、
- * conflicts に記録して呼び出し側が報告できるようにする。
+ * target へ source(パッチ)をディープマージする。値が重なるキーは後のレイヤー(source)が
+ * 勝つ。テンプレートのレイヤー合成(base → language → features)は意図的な上書きを含むため
+ * 後勝ちが正しい。init 開始前から存在していた値の保護は呼び出し側(init)が行う。
  */
 function deepMerge(
   target: Record<string, unknown>,
-  source: Record<string, unknown>,
-  conflicts: Omit<MergeConflict, "file">[],
-  prefix = ""
+  source: Record<string, unknown>
 ): Record<string, unknown> {
   const out: Record<string, unknown> = { ...target };
   for (const [key, value] of Object.entries(source)) {
-    const keyPath = prefix ? `${prefix}.${key}` : key;
     const existing = out[key];
     if (
       value &&
@@ -69,19 +55,11 @@ function deepMerge(
       typeof existing === "object" &&
       !Array.isArray(existing)
     ) {
-      out[key] = deepMerge(
-        existing as Record<string, unknown>,
-        value as Record<string, unknown>,
-        conflicts,
-        keyPath
-      );
+      out[key] = deepMerge(existing as Record<string, unknown>, value as Record<string, unknown>);
     } else if (Array.isArray(value) && Array.isArray(existing)) {
       out[key] = [...new Set([...existing, ...value])];
-    } else if (!(key in out) || existing === undefined) {
+    } else {
       out[key] = value;
-    } else if (JSON.stringify(existing) !== JSON.stringify(value)) {
-      // 既存値を優先し、テンプレートとの食い違いとして記録する
-      conflicts.push({ keyPath, existing, incoming: value });
     }
   }
   return out;
@@ -102,7 +80,7 @@ export function copyTree(
 ): CopyResult {
   const overwrite = options.overwrite ?? false;
   const hbs = createHandlebars(ctx);
-  const result: CopyResult = { written: [], skipped: [], conflicts: [] };
+  const result: CopyResult = { written: [], skipped: [] };
 
   const walk = (src: string, dest: string): void => {
     for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
@@ -123,10 +101,7 @@ export function copyTree(
           const base = fs.existsSync(destPath)
             ? (JSON.parse(fs.readFileSync(destPath, "utf8")) as Record<string, unknown>)
             : {};
-          const conflicts: Omit<MergeConflict, "file">[] = [];
-          const merged = deepMerge(base, patch, conflicts);
-          fs.writeFileSync(destPath, JSON.stringify(merged, null, 2) + "\n");
-          result.conflicts.push(...conflicts.map((c) => ({ ...c, file: destPath })));
+          fs.writeFileSync(destPath, JSON.stringify(deepMerge(base, patch), null, 2) + "\n");
         } else {
           // テキスト(.env.example 等)は末尾へ追記（既に含まれていればスキップ）
           const base = fs.existsSync(destPath) ? fs.readFileSync(destPath, "utf8") : "";

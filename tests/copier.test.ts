@@ -58,35 +58,18 @@ describe("copyTree", () => {
     expect(merged.scripts).toEqual({ build: "tsc", test: "vitest" });
   });
 
-  it(".patch のマージで値が食い違うキーは既存値を維持し conflicts に記録する", () => {
+  it(".patch のマージは後勝ち(レイヤー合成の意図的な上書きを許容する)", () => {
     fs.writeFileSync(
       path.join(dest, "package.json"),
-      JSON.stringify({
-        engines: { node: ">=22" },
-        scripts: { dev: "tsx src/cli.ts" },
-        description: "既存の説明",
-      })
+      JSON.stringify({ scripts: { build: "tsc" } })
     );
     fs.writeFileSync(
       path.join(src, "package.json.patch"),
-      JSON.stringify({
-        engines: { node: ">=20.0.0" },
-        scripts: { dev: "tsx src/index.ts", test: "vitest" },
-        description: "既存の説明",
-      })
+      JSON.stringify({ scripts: { build: "tsc --noEmit && vite build" } })
     );
-    const result = copyTree(src, dest, ctx);
+    copyTree(src, dest, ctx);
     const merged = JSON.parse(fs.readFileSync(path.join(dest, "package.json"), "utf8"));
-
-    // 既存値が維持され、新規キーだけ追加される
-    expect(merged.engines.node).toBe(">=22");
-    expect(merged.scripts.dev).toBe("tsx src/cli.ts");
-    expect(merged.scripts.test).toBe("vitest");
-
-    // 食い違い2箇所のみ記録される（同値の description は衝突扱いしない）
-    expect(result.conflicts).toHaveLength(2);
-    expect(result.conflicts.map((c) => c.keyPath).sort()).toEqual(["engines.node", "scripts.dev"]);
-    expect(result.conflicts[0].file).toBe(path.join(dest, "package.json"));
+    expect(merged.scripts.build).toBe("tsc --noEmit && vite build");
   });
 
   it("テキストの .patch は末尾へ追記し、重複追記しない", () => {
