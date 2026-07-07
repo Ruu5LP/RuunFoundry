@@ -23,7 +23,9 @@ const baseReport = (over: Partial<DeepReport["trace"]>): DeepReport => ({
       label: "要件品質",
       docPath: "docs/requirements.md",
       score: 83,
-      failed: [{ id: "requirements.permissions", label: "権限条件がある", improvement: "権限を明記する" }],
+      failed: [
+        { id: "requirements.permissions", label: "権限条件がある", improvement: "権限を明記する" },
+      ],
     },
     { category: "design", label: "設計品質", score: 0, failed: [] },
   ],
