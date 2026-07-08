@@ -8,6 +8,7 @@ import { runDoctor } from "../doctor/runner";
 import { runDeepDoctor } from "../doctor/deep";
 import { installWorkflow } from "./workflow";
 import { startSession, sessionNames } from "./session";
+import { renderOnboarding } from "./onboard";
 import { runUpdate } from "./update";
 
 /**
@@ -97,6 +98,13 @@ export async function runMcpServer(cwd: string): Promise<void> {
       runUpdate(resolveDir(cwd, directory), { diff });
       return text(diff ? "差分を確認しました(stderr ログ参照)。" : "更新を実行しました。");
     }
+  );
+
+  server.tool(
+    "onboard",
+    "リポジトリのルール・ワークフロー・セッション状態・健全性をまとめたオンボーディングサマリ(Markdown)を返す。作業開始前に読むとプロジェクトの文脈を把握できる",
+    { directory: dirSchema },
+    async ({ directory }) => text(renderOnboarding(resolveDir(cwd, directory)))
   );
 
   const transport = new StdioServerTransport();

@@ -30,6 +30,7 @@ npm install && npm run build && npm link
 | `foundruu rules add "<text>"` / `rules list`                          | レビュー指摘を `.ai/rules/` へ規約化して再発防止（`--file` で追記先指定可）                        |
 | `foundruu update [--force] [--diff] [--only <paths...>]`              | Workflow / Prompt / Rules を最新へ更新（パス指定・差分確認可）                                     |
 | `foundruu session start <name>` / `list` / `show` / `end` / `current` | AI開発セッションの作成 / 一覧 / 状態表示 / 完了（CHANGELOG 下書きを自動生成） / 現在のセッション   |
+| `foundruu onboard`                                                    | ルール・ワークフロー・セッション・健全性をまとめたオンボーディングサマリ(Markdown)を出力           |
 | `foundruu templates`                                                  | 利用可能なテンプレート一覧                                                                         |
 | `foundruu plugins`                                                    | 読み込まれているプラグイン一覧                                                                     |
 | `foundruu mcp`                                                        | MCP サーバーを起動（AIエージェント連携）                                                           |

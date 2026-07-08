@@ -88,6 +88,16 @@ program
     }
   );
 
+program
+  .command("onboard")
+  .description(
+    "リポジトリのルール・ワークフロー・セッション・健全性をまとめたオンボーディングサマリを出力する"
+  )
+  .action(async () => {
+    const { runOnboard } = await import("./commands/onboard.js");
+    await wrap(() => runOnboard(process.cwd()));
+  });
+
 const rules = program
   .command("rules")
   .description("AI開発の規約(.ai/rules)を管理する(レビュー指摘の規約化)");
