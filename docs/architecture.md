@@ -21,15 +21,24 @@ foundruu/
 │   │   ├── init.ts
 │   │   ├── workflow.ts
 │   │   ├── doctor.ts
-│   │   └── update.ts
+│   │   ├── update.ts
+│   │   ├── session.ts         # セッション管理（永続化は core/session-store）
+│   │   ├── hooks.ts           # pre-commit フック管理（ガードレール）
+│   │   ├── rules.ts           # レビュー指摘の規約化（.ai/rules への追記）
+│   │   └── mcp.ts / dashboard.ts / cloud.ts
 │   ├── core/
 │   │   ├── assets.ts          # 同梱アセットのパス解決
 │   │   ├── config.ts          # foundruu.json の読み書き
 │   │   ├── copier.ts          # テンプレートコピー + Handlebars レンダリング
+│   │   ├── session-store.ts   # セッション状態の永続化（.current / .status）
+│   │   ├── changelog.ts       # session end 時の CHANGELOG 下書き生成
 │   │   └── logger.ts          # 出力整形
 │   ├── doctor/
 │   │   ├── types.ts           # DoctorCheck インターフェース
 │   │   ├── checks.ts          # 宣言的チェックルール定義（追加はここに1エントリ足すだけ）
+│   │   ├── maintenance.ts     # 保守運用チェック（ドキュメント鮮度 / 設計昇格）
+│   │   ├── deep.ts            # --deep の diff 収集と採点（rules/docs/trace に分割）
+│   │   ├── deep-rules.ts / deep-docs.ts / deep-trace.ts
 │   │   └── runner.ts          # チェック実行 + 集計
 │   └── registry/
 │       └── templates.ts       # テンプレートレジストリ
@@ -87,6 +96,17 @@ foundruu/
 - **npm 公開**: `bin` / `files` / `prepublishOnly` 設定済み。`npx foundruu` で利用可能
 - **GitHub Actions**: `foundruu doctor --json` の exit code / JSON 出力を CI で消費
 - **VSCode Extension / MCP Server**: `src/commands` はロジックを `core` / `doctor` に委譲しているため、同じ関数を Extension / MCP から呼べる
+
+### ガードレールとレビュー・保守の連携
+
+- **pre-commit フック**（`hooks install`）: 事後診断だった doctor をコミット時のガードレールにする。
+  生成フックにマーカーを埋め込み、FoundRuu 以外のフックには干渉しない
+- **PR コメント**: GitHub Action の `pr-comment` 入力で deep 結果を PR コメントとして投稿
+  （`--edit-last` で更新、積み上げない）。`doctor --deep --markdown` がその出力を担う
+- **規約化**（`rules add`）: レビュー指摘を `.ai/rules/review-feedback.md` へ追記し再発を防ぐ
+- **保守運用チェック**: docs 未更新のままソース変更が続くと warn（ドキュメント鮮度）、
+  終了済みセッションの design.md が docs へ未昇格なら warn（設計判断の昇格）。
+  git 履歴が読めない環境では対象外として pass する
 
 ### Doctor --deep のトレーサビリティ
 
