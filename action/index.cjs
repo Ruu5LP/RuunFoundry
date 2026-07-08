@@ -7327,9 +7327,7 @@ function uninstallHooks(cwd) {
     return;
   }
   if (!isOurs(file2)) {
-    throw new Error(
-      `pre-commit \u30D5\u30C3\u30AF\u306F FoundRuu \u304C\u751F\u6210\u3057\u305F\u3082\u306E\u3067\u306F\u306A\u3044\u305F\u3081\u524A\u9664\u3057\u307E\u305B\u3093: ${file2}`
-    );
+    throw new Error(`pre-commit \u30D5\u30C3\u30AF\u306F FoundRuu \u304C\u751F\u6210\u3057\u305F\u3082\u306E\u3067\u306F\u306A\u3044\u305F\u3081\u524A\u9664\u3057\u307E\u305B\u3093: ${file2}`);
   }
   import_fs17.default.rmSync(file2);
   log.success("pre-commit \u30D5\u30C3\u30AF\u3092\u524A\u9664\u3057\u307E\u3057\u305F");
