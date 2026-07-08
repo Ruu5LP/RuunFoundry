@@ -8,6 +8,10 @@
 
 ### Added
 
+- doctor に**保守運用カテゴリ**のチェックを追加（時間経過によるドキュメントの劣化を検知）
+  - **ドキュメント鮮度**（`docs-freshness`, warn）: `docs/` が最後に更新されてからソースの変更コミットがしきい値（デフォルト 10）を超えると警告。`.foundruurc` の `doctor.freshness`（`docs` / `source` / `maxCommits`）でカスタマイズ可能
+  - **設計判断の昇格**（`design-promotion`, warn）: 終了済みセッションの design.md が空でなく、セッション終了後に `docs/architecture.md` が更新されていない場合に昇格漏れの可能性として警告
+
 - **`session end` 時に CHANGELOG 下書きを自動生成**: セッションの summary.md / requirements.md から要約と受け入れ条件（AC-n）を抽出し、`.ai/sessions/<name>/changelog-draft.md` を生成する。リリース時はこれを整えて CHANGELOG.md の Unreleased へ転記するだけでよい。既存の下書きは上書きしない
 
 - **`foundruu rules add "<text>"` / `rules list`**: レビュー指摘を `.ai/rules/review-feedback.md` へ 1 コマンドで規約化するコマンドを追加（`--file` で追記先変更可）。「同じ指摘を繰り返さない」ためのレビュー → 規約の還元フローを支える

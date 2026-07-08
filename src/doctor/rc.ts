@@ -10,6 +10,15 @@ export interface FoundruuRc {
     disable?: string[];
     /** チェックIDごとの severity 上書き */
     severity?: Record<string, Severity>;
+    /** ドキュメント鮮度チェック(docs-freshness)のカスタマイズ */
+    freshness?: {
+      /** ドキュメントとみなすパス(デフォルト: ["docs"]) */
+      docs?: string[];
+      /** ソースとみなすパス(デフォルト: ["src", "app", "lib", "packages"]) */
+      source?: string[];
+      /** docs 未更新のまま許容するソース変更コミット数(デフォルト: 10) */
+      maxCommits?: number;
+    };
     /** --deep の採点カスタマイズ */
     deep?: {
       /** 無効化する採点観点のルールID（例: "design.api-io"）。未知のIDは無視される */

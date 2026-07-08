@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import { maintenanceChecks } from "./maintenance";
 import { DoctorCheck } from "./types";
 
 /** package.json の name か、無ければディレクトリ名をプロジェクト名として使う */
@@ -175,4 +176,5 @@ export const checks: DoctorCheck[] = [
     hint: "foundruu.json がありません（foundruu init / workflow install で生成されます）",
     check: (ctx) => ctx.exists("foundruu.json"),
   },
+  ...maintenanceChecks,
 ];

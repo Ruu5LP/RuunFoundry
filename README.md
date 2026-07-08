@@ -94,7 +94,15 @@ JSON パッチは新規キーのみ追加します。既存の値とテンプレ
 ## Doctor のチェック項目
 
 README / LICENSE / .gitignore / .env.example / package.json・composer.json /
-Docker / GitHub Actions / AI Rules / Workflow / Prompt / 進行中セッションの要件 / foundruu.json
+Docker / GitHub Actions / AI Rules / Workflow / Prompt / 進行中セッションの要件 / foundruu.json /
+ドキュメント鮮度 / 設計判断の昇格
+
+保守運用チェック（warn）は時間経過による劣化を検知します:
+
+- **ドキュメント鮮度**: `docs/` が最後に更新されてからソースの変更コミットが続くと警告
+  （しきい値・対象パスは `.foundruurc` の `doctor.freshness` で変更可能）
+- **設計判断の昇格**: 終了済みセッションの design.md に、`docs/architecture.md` へ
+  未反映の可能性がある設計判断が残っていると警告
 
 `foundruu hooks install` で pre-commit フックを導入すると、コミット前に doctor が自動実行され、
 fail があるコミットはその場で止まります（緊急時は `git commit --no-verify`）。
