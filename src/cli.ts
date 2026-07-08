@@ -74,6 +74,7 @@ program
   .option("--deep", "docs/ と git 差分から AI開発プロセスの品質をスコア診断する")
   .option("--since <ref>", "--deep の差分比較基準", "main")
   .option("--report <dir>", "--deep のレポート(md/html/json)を書き出すディレクトリ")
+  .option("--markdown", "--deep の結果を Markdown で標準出力する(PR コメント用)")
   .action(
     async (opts: {
       json?: boolean;
@@ -81,10 +82,30 @@ program
       deep?: boolean;
       since?: string;
       report?: string;
+      markdown?: boolean;
     }) => {
       await wrap(() => runDoctorCommand(process.cwd(), opts));
     }
   );
+
+const rules = program
+  .command("rules")
+  .description("AI開発の規約(.ai/rules)を管理する(レビュー指摘の規約化)");
+rules
+  .command("add <text>")
+  .description("レビュー指摘等を規約として .ai/rules へ追記する(再発防止)")
+  .option("--file <name>", "追記先のルールファイル名(デフォルト: review-feedback.md)")
+  .action(async (text: string, opts: { file?: string }) => {
+    const { addRule } = await import("./commands/rules.js");
+    await wrap(() => addRule(process.cwd(), text, opts));
+  });
+rules
+  .command("list")
+  .description("ルールファイルの一覧と件数を表示する")
+  .action(async () => {
+    const { listRules } = await import("./commands/rules.js");
+    await wrap(() => listRules(process.cwd()));
+  });
 
 const hooks = program
   .command("hooks")

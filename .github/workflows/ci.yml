@@ -46,9 +46,16 @@ jobs:
 
   self-doctor:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
       - uses: actions/checkout@v7
-      # 自分自身の Action を dogfooding する
+        with:
+          fetch-depth: 0
+      # 自分自身の Action を dogfooding する(PR では deep 結果をコメント投稿)
       - uses: ./
         with:
           fail-on: never
+          deep: true
+          pr-comment: true
