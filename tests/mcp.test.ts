@@ -48,7 +48,7 @@ afterEach(() => {
 });
 
 describe("runMcpServer", () => {
-  it("6 つのツールを登録し、transport に connect する", async () => {
+  it("7 つのツールを登録し、transport に connect する", async () => {
     const useStderr = vi.spyOn(log, "useStderr");
     await runMcpServer(cwd);
 
@@ -60,6 +60,7 @@ describe("runMcpServer", () => {
       "session_list",
       "workflow_install",
       "update",
+      "onboard",
     ]);
     expect(useStderr).toHaveBeenCalledOnce(); // stdout を JSON-RPC 専用に保つ
     expect(connectMock).toHaveBeenCalledOnce();

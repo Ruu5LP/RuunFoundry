@@ -8,6 +8,8 @@
 
 ### Added
 
+- **`foundruu onboard`**: 新しいメンバー（人・AI）向けに、リポジトリのルール（CLAUDE.md / .ai/rules）・ワークフロー・セッションの状態・doctor 結果・次のステップをまとめたオンボーディングサマリを Markdown で出力するコマンドを追加。MCP にも `onboard` ツールとして公開し、AI エージェントが作業開始前にプロジェクトの文脈を一括取得できるようにした
+
 - doctor に**保守運用カテゴリ**のチェックを追加（時間経過によるドキュメントの劣化を検知）
   - **ドキュメント鮮度**（`docs-freshness`, warn）: `docs/` が最後に更新されてからソースの変更コミットがしきい値（デフォルト 10）を超えると警告。`.foundruurc` の `doctor.freshness`（`docs` / `source` / `maxCommits`）でカスタマイズ可能
   - **設計判断の昇格**（`design-promotion`, warn）: 終了済みセッションの design.md が空でなく、セッション終了後に `docs/architecture.md` が更新されていない場合に昇格漏れの可能性として警告
