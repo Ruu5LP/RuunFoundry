@@ -1,7 +1,7 @@
 import pc from "picocolors";
 import { runDoctor, runDoctorFix } from "../doctor/runner";
 import { runDeepDoctor } from "../doctor/deep";
-import { writeDeepReports } from "../doctor/report";
+import { renderMarkdown, writeDeepReports } from "../doctor/report";
 import { readRc } from "../doctor/rc";
 import { log } from "../core/logger";
 
@@ -11,6 +11,8 @@ export interface DoctorOptions {
   since?: string;
   /** --deep レポート(md/html/json)の出力先ディレクトリ */
   report?: string;
+  /** --deep の結果を Markdown で標準出力する(PR コメント用) */
+  markdown?: boolean;
   /** 修復可能な項目を自動生成してから診断する */
   fix?: boolean;
 }
@@ -33,6 +35,10 @@ function runDeep(cwd: string, options: DoctorOptions): void {
   }
   if (options.json) {
     console.log(JSON.stringify(report, null, 2));
+    return;
+  }
+  if (options.markdown) {
+    console.log(renderMarkdown(report));
     return;
   }
   log.info(pc.bold("FoundRuu Doctor --deep — AI開発プロセス品質診断\n"));

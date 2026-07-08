@@ -8,6 +8,10 @@
 
 ### Added
 
+- **`foundruu rules add "<text>"` / `rules list`**: レビュー指摘を `.ai/rules/review-feedback.md` へ 1 コマンドで規約化するコマンドを追加（`--file` で追記先変更可）。「同じ指摘を繰り返さない」ためのレビュー → 規約の還元フローを支える
+- **`doctor --deep --markdown`**: deep の結果を Markdown で標準出力するオプションを追加（PR コメント用）
+- **GitHub Action に `pr-comment` 入力を追加**: `pr-comment: "true"` で deep スコアとトレーサビリティ結果を PR コメントとして投稿する（既存コメントを更新し積み上げない）。`github-token` 入力でトークン差し替え可。本リポジトリの self-doctor ジョブでもドッグフーディング
+
 - **`foundruu hooks install` / `uninstall` / `status`**: git pre-commit フックの管理コマンドを追加。コミット前に `foundruu doctor` を自動実行し、fail があるコミットをその場で中止する（緊急時は `git commit --no-verify`）。生成フックにはマーカーを埋め込み、FoundRuu 以外の既存フックは `--force` なしでは上書きせず、削除も自分が生成したものに限る
 - doctor に **進行中セッションの要件チェック**（`session-requirements`, warn）を追加。現在のセッションがあるのに requirements.md が未記入の場合に警告し、「要件なしで実装が進む」状態を検知する
 

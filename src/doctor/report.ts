@@ -21,7 +21,8 @@ function writeFile(file: string, content: string): string {
   return file;
 }
 
-function renderMarkdown(report: DeepReport): string {
+/** PR コメント等にそのまま貼れる Markdown を返す(--report の md と同一内容) */
+export function renderMarkdown(report: DeepReport): string {
   const hasMeasured = report.scores.some((s) => s.docPath !== undefined);
   const scoreText = (s: DeepReport["scores"][number]): string =>
     s.docPath !== undefined ? `${s.score}点` : "未計測";

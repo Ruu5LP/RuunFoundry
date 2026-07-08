@@ -19,6 +19,14 @@ inputs:
     description: --deep の差分比較基準
     required: false
     default: "main"
+  pr-comment:
+    description: deep の結果を PR コメントとして投稿する場合は true
+    required: false
+    default: "false"
+  github-token:
+    description: PR コメント投稿に使うトークン(デフォルト: github.token)
+    required: false
+    default: ${{ github.token }}
 
 runs:
   using: composite
@@ -75,6 +83,24 @@ runs:
         echo '```' >> "$GITHUB_STEP_SUMMARY"
         node "${{ github.action_path }}/action/index.cjs" doctor --deep --since "${{ inputs.since }}" >> "$GITHUB_STEP_SUMMARY"
         echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+    # 同じ PR にコメントを積み上げず、既存の FoundRuu コメント(自 bot の最後のコメント)を更新する
+    - name: Post deep report as PR comment
+      if: inputs.pr-comment == 'true' && github.event_name == 'pull_request'
+      shell: bash
+      working-directory: ${{ inputs.path }}
+      run: |
+        git fetch origin "${{ inputs.since }}" --depth=50 || true
+        {
+          echo "<!-- foundruu-deep-report -->"
+          node "${{ github.action_path }}/action/index.cjs" doctor --deep --since "${{ inputs.since }}" --markdown
+        } > /tmp/foundruu-deep-comment.md
+        gh pr comment "${{ github.event.pull_request.number }}" \
+          --body-file /tmp/foundruu-deep-comment.md \
+          --edit-last --create-if-none
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+        GH_REPO: ${{ github.repository }}
 
 branding:
   icon: activity

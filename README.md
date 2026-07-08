@@ -27,6 +27,7 @@ npm install && npm run build && npm link
 | `foundruu doctor [--json] [--fix]`                                    | リポジトリがAI開発可能な状態か診断（`--fix` で README/LICENSE/.gitignore/.env.example を自動生成） |
 | `foundruu doctor --deep [--since <ref>] [--report <dir>]`             | AI開発プロセス品質をスコア診断（md/html/json レポート出力可）                                      |
 | `foundruu hooks install` / `uninstall` / `status`                     | pre-commit フックを管理（コミット前に doctor を実行し、fail ならコミットを中止）                   |
+| `foundruu rules add "<text>"` / `rules list`                          | レビュー指摘を `.ai/rules/` へ規約化して再発防止（`--file` で追記先指定可）                        |
 | `foundruu update [--force] [--diff] [--only <paths...>]`              | Workflow / Prompt / Rules を最新へ更新（パス指定・差分確認可）                                     |
 | `foundruu session start <name>` / `list` / `show` / `end` / `current` | AI開発セッションの作成 / 一覧 / 状態表示 / 完了 / 現在のセッション                                 |
 | `foundruu templates`                                                  | 利用可能なテンプレート一覧                                                                         |
@@ -231,7 +232,12 @@ jobs:
         with:
           fail-on: error # error / warning / never
           deep: "true" # --deep のスコア診断も実行
+          pr-comment: "true" # deep の結果を PR コメントとして投稿(要 pull-requests: write)
 ```
+
+`pr-comment: "true"` にすると、deep スコアとトレーサビリティ結果が PR コメントとして
+投稿されます（同じ PR では既存コメントを更新し、積み上げません）。ジョブに
+`permissions: pull-requests: write` が必要です。
 
 結果はジョブサマリに表形式で出力されます。依存ごとバンドル済みのため、実行時に
 npm install や TypeScript ビルドは走りません(`node` で即実行)。`@main` ではなく
